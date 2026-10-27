@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pragnya — Autonomous AI Desktop Agent & Built-in IDE for Windows</title>
+  <meta name="description" content="Pragnya is a native autonomous AI desktop agent and IDE for Windows with multi-key Groq rate-limit failover, Qwen multimodal vision, interactive PowerShell terminal, and deep desktop automation.">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ea580c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z'/></svg>">
+  
+  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#fff7ed',
+              100: '#ffedd5',
+              200: '#fed7aa',
+              300: '#fdba74',
+              400: '#fb923c',
+              500: '#f97316',
+              600: '#ea580c',
+              700: '#c2410c',
+              800: '#9a3412',
+              900: '#7c2d12',
+            },
+            dark: {
+              950: '#06080D',
+              900: '#0B0F17',
+              850: '#101624',
+              800: '#172033',
+              750: '#1F2B44',
+              700: '#2A3959',
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          boxShadow: {
+            'glow-amber': '0 0 60px -15px rgba(249, 115, 22, 0.3)',
+            'glow-emerald': '0 0 50px -15px rgba(16, 185, 129, 0.25)',
+            'glow-blue': '0 0 60px -15px rgba(56, 189, 248, 0.2)',
+            'card-dark': '0 25px 50px -12px rgba(0, 0, 0, 0.85)',
+          },
+          animation: {
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'float': 'float 6s ease-in-out infinite',
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-8px)' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom subtle grid background */
+    .bg-grid-pattern {
+      background-size: 36px 36px;
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+    }
+    
+    /* Smooth radial vignette */
+    .bg-radial-glow {
+      background: radial-gradient(circle at 50% 0%, rgba(234, 88, 12, 0.18) 0%, rgba(6, 8, 13, 0) 70%);
+    }
+
+    /* Ambient card blur */
+    .glass-card {
+      background: rgba(16, 22, 36, 0.68);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .glass-card:hover {
+      border-color: rgba(249, 115, 22, 0.35);
+      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.9), 0 0 30px -10px rgba(249, 115, 22, 0.15);
+    }
+
+    /* Soundwave bars animation */
+    @keyframes soundwave {
+      0%, 100% { height: 4px; }
+      50% { height: 18px; }
+    }
+    .sound-bar {
+      animation: soundwave 1.2s ease-in-out infinite;
+    }
+
+    /* Scrollbar styling */
+    ::-webkit-scrollbar {
+      width: 7px;
+      height: 7px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #06080D;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1F2B44;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #334155;
+    }
+  </style>
+</head>
+<body class="bg-dark-950 text-slate-100 font-sans antialiased selection:bg-brand-500 selection:text-white relative overflow-x-hidden">
+
+  <!-- Toast Notification Container -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none flex items-center gap-2.5 px-4 py-3 rounded-xl bg-dark-900 border border-emerald-500/40 shadow-glow-emerald text-xs font-mono text-emerald-300">
+    <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i>
+    <span id="toast-msg">Copied to clipboard!</span>
+  </div>
+
+  <!-- Ambient Light Orbs -->
+  <div class="fixed top-0 left-1/2 -translate-x-1/2 w-[1100px] h-[600px] bg-radial-glow pointer-events-none -z-10"></div>
+  <div class="fixed top-[35%] right-[-10%] w-[550px] h-[550px] bg-brand-600/8 blur-[130px] rounded-full pointer-events-none -z-10"></div>
+  <div class="fixed top-[65%] left-[-10%] w-[550px] h-[550px] bg-blue-500/8 blur-[150px] rounded-full pointer-events-none -z-10"></div>
+
+  <!-- ==================== HEADER / NAV ==================== -->
+  <header class="sticky top-0 z-40 backdrop-blur-2xl bg-dark-950/85 border-b border-white/[0.07] transition-all">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      
+      <!-- Brand Logo -->
+      <a href="#" class="flex items-center gap-3 group">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 via-brand-600 to-amber-600 flex items-center justify-center text-white shadow-lg shadow-brand-500/25 group-hover:scale-105 transition-transform">
+          <i data-lucide="sparkles" class="w-5 h-5"></i>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-xl font-bold tracking-tight text-white font-sans">Pragnya</span>
+          <span class="text-[11px] font-mono font-medium px-2 py-0.5 rounded-full bg-brand-500/10 text-brand-400 border border-brand-500/25">v1.1.0</span>
+        </div>
+      </a>
+
+      <!-- Desktop Nav -->
+      <nav class="hidden md:flex items-center gap-7 text-sm font-medium text-slate-300">
+        <a href="#features" class="hover:text-white transition-colors">Features</a>
+        <a href="#ide" class="hover:text-white transition-colors">Pragnya Code IDE</a>
+        <a href="#failover" class="hover:text-white transition-colors flex items-center gap-1.5">
+          <span>Multi-Key Engine</span>
+          <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+        </a>
+        <a href="#demo" class="hover:text-white transition-colors">Interactive Demo</a>
+        <a href="#downloads" class="hover:text-white transition-colors">Releases</a>
+        <a href="#faq" class="hover:text-white transition-colors">FAQ</a>
+      </nav>
+
+      <!-- Action Buttons -->
+      <div class="flex items-center gap-3">
+        <a href="https://github.com/adityasysnet/ai-desktop-agent" target="_blank" rel="noreferrer" class="hidden sm:flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-300 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] transition-all">
+          <i data-lucide="github" class="w-4 h-4"></i>
+          <span>GitHub</span>
+        </a>
+        
+        <a href="https://github.com/adityasysnet/ai-desktop-agent-exe/releases/tag/v1.1.0" target="_blank" rel="noreferrer" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold text-white bg-gradient-to-r from-brand-600 via-brand-500 to-amber-600 hover:from-brand-500 hover:to-amber-500 shadow-md shadow-brand-500/25 hover:shadow-brand-500/35 transition-all hover:-translate-y-0.5 active:translate-y-0">
+          <i data-lucide="download" class="w-4 h-4"></i>
+          <span>Download v1.1.0</span>
+        </a>
+
+        <!-- Mobile Menu Toggle -->
+        <button onclick="toggleMobileMenu()" class="md:hidden p-2 text-slate-400 hover:text-white">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Mobile Nav Dropdown -->
+    <div id="mobile-menu" class="hidden md:hidden px-4 pt-3 pb-5 border-b border-white/[0.08] bg-dark-950/95 space-y-3 font-medium text-sm text-slate-300">
+      <a href="#features" onclick="toggleMobileMenu()" class="block py-1 hover:text-white">Features</a>
+      <a href="#ide" onclick="toggleMobileMenu()" class="block py-1 hover:text-white">Pragnya Code IDE</a>
+      <a href="#failover" onclick="toggleMobileMenu()" class="block py-1 hover:text-white">Multi-Key Engine</a>
+      <a href="#demo" onclick="toggleMobileMenu()" class="block py-1 hover:text-white">Interactive Demo</a>
+      <a href="#downloads" onclick="toggleMobileMenu()" class="block py-1 hover:text-white">Downloads & Releases</a>
+      <a href="#faq" onclick="toggleMobileMenu()" class="block py-1 hover:text-white">FAQ</a>
+    </div>
+  </header>
+
+  <!-- ==================== HERO SECTION ==================== -->
+  <section class="relative pt-16 pb-20 md:pt-24 md:pb-28 bg-grid-pattern overflow-hidden">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+      
+      <!-- Release Announcement Badge -->
+      <a href="https://github.com/adityasysnet/ai-desktop-agent-exe/releases/tag/v1.1.0" target="_blank" rel="noreferrer" class="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.1] text-xs font-medium text-slate-300 mb-8 backdrop-blur-md hover:border-brand-500/50 hover:bg-white/[0.06] transition-all cursor-pointer group shadow-lg">
+        <span class="flex h-2 w-2 relative">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-brand-500"></span>
+        </span>
+        <span class="text-slate-200 font-semibold">Official Release v1.1.0</span>
+        <span class="text-slate-600">|</span>
+        <span class="text-brand-400 group-hover:underline flex items-center gap-1">
+          Zero-Downtime Multi-Key Failover & GPT-OSS 120B
+          <i data-lucide="arrow-right" class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"></i>
+        </span>
+      </a>
+
+      <!-- Main Headline -->
+      <h1 class="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-white max-w-4xl mx-auto leading-[1.08] mb-6">
+        Your Operating System, <br>
+        <span class="bg-gradient-to-r from-brand-400 via-amber-300 to-orange-500 bg-clip-text text-transparent">
+          Supercharged with Autonomy.
+        </span>
+      </h1>
+
+      <!-- Subheadline -->
+      <p class="text-lg sm:text-xl text-slate-300 max-w-2xl mx-auto font-normal leading-relaxed mb-10">
+        Pragnya is a native autonomous AI desktop agent and IDE for Windows. It controls browsers with Playwright, codes in an interactive IDE, heals terminal errors, and executes with resilient multi-key Groq inference.
+      </p>
+
+      <!-- Dual Download CTA -->
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4 max-w-lg mx-auto mb-12">
+        <a href="https://github.com/adityasysnet/ai-desktop-agent-exe/releases/tag/v1.1.0" target="_blank" rel="noreferrer" class="w-full sm:w-auto flex items-center justify-center gap-3 px-8 py-4 rounded-xl font-bold text-white bg-gradient-to-r from-brand-600 via-brand-500 to-amber-600 hover:from-brand-500 hover:to-amber-500 shadow-xl shadow-brand-500/30 hover:shadow-brand-500/50 transition-all hover:-translate-y-0.5 active:translate-y-0 text-base">
+          <i data-lucide="download" class="w-5 h-5"></i>
+          <span>Download Pragnya.exe</span>
+          <span class="text-xs font-mono font-normal opacity-90 px-2 py-0.5 rounded bg-black/25">v1.1.0</span>
+        </a>
+
+        <button onclick="copyCommand('uv run python main.py')" class="w-full sm:w-auto flex items-center justify-center gap-2.5 px-6 py-4 rounded-xl font-mono text-xs text-slate-300 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.1] hover:border-slate-500 transition-all group">
+          <i data-lucide="terminal" class="w-4 h-4 text-brand-400"></i>
+          <span>uv run python main.py</span>
+          <i data-lucide="copy" class="w-3.5 h-3.5 text-slate-500 group-hover:text-white transition-colors"></i>
+        </button>
+      </div>
+
+      <!-- Trust Badges -->
+      <div class="flex flex-wrap items-center justify-center gap-6 sm:gap-10 text-xs font-mono text-slate-400">
+        <div class="flex items-center gap-2">
+          <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
+          <span>Safe Path Sandbox</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <i data-lucide="zap" class="w-4 h-4 text-amber-400"></i>
+          <span>Sub-Second TTFT (Groq)</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <i data-lucide="layers" class="w-4 h-4 text-sky-400"></i>
+          <span>Auto-Failover (1-5 Keys)</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <i data-lucide="volume-2" class="w-4 h-4 text-purple-400"></i>
+          <span>SAPI5 Spoken Voice</span>
+        </div>
+      </div>
+
+      <!-- ==================== HERO APP WINDOW MOCKUP ==================== -->
+      <div class="mt-14 relative max-w-5xl mx-auto rounded-2xl glass-card border border-white/[0.1] shadow-card-dark overflow-hidden transition-all text-left">
+        
+        <!-- Window Title Bar -->
+        <div class="bg-dark-900/95 border-b border-white/[0.08] px-4 py-3 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-rose-500/80 inline-block"></span>
+            <span class="w-3 h-3 rounded-full bg-amber-500/80 inline-block"></span>
+            <span class="w-3 h-3 rounded-full bg-emerald-500/80 inline-block"></span>
+            <span class="text-xs font-mono text-slate-400 ml-2">Pragnya Desktop Agent — [Model: openai/gpt-oss-120b]</span>
+          </div>
+          <div class="flex items-center gap-3 text-slate-400 text-xs font-mono">
+            <span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Pool: 3/5 Keys Active
+            </span>
+            <span class="hidden sm:inline-block text-slate-500">v1.1.0</span>
+          </div>
+        </div>
+
+        <!-- Window Body (Split Pane: Agent Chat + Live IDE Execution) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 min-h-[460px] bg-dark-950/70 font-sans">
+          
+          <!-- Left: Agent Interaction & Tool Logs (5 Cols) -->
+          <div class="lg:col-span-5 p-5 border-b lg:border-b-0 lg:border-r border-white/[0.08] flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-4">
+                <span class="text-xs font-mono uppercase tracking-wider text-slate-400">Autonomous Workflow</span>
+                <span class="text-[11px] text-brand-400 font-mono">Run #142 • Live</span>
+              </div>
+
+              <!-- User Prompt Bubble -->
+              <div class="mb-4 bg-brand-500/10 border border-brand-500/20 rounded-xl p-3 text-sm text-slate-200">
+                <p class="font-medium text-brand-300 text-xs mb-1">User Prompt:</p>
+                "Fetch top 3 HackerNews stories, write an automated scraper in Python, run tests in terminal, and verify UI state."
+              </div>
+
+              <!-- Agent Action Steps -->
+              <div class="space-y-2.5 font-mono text-xs">
+                <div class="p-2.5 rounded-lg bg-dark-900 border border-white/[0.05] flex items-center gap-2.5">
+                  <i data-lucide="globe" class="w-4 h-4 text-sky-400 shrink-0"></i>
+                  <span class="text-slate-300">BrowserTool: Scraped HackerNews via Playwright</span>
+                  <span class="ml-auto text-emerald-400 text-[10px]">200 OK</span>
+                </div>
+
+                <div class="p-2.5 rounded-lg bg-dark-900 border border-white/[0.05] flex items-center gap-2.5">
+                  <i data-lucide="file-code-2" class="w-4 h-4 text-brand-400 shrink-0"></i>
+                  <span class="text-slate-300">FileTools: Generated `src/news_fetcher.py`</span>
+                  <span class="ml-auto text-emerald-400 text-[10px]">SAVED</span>
+                </div>
+
+                <div class="p-2.5 rounded-lg bg-dark-900 border border-white/[0.05] flex items-center gap-2.5">
+                  <i data-lucide="terminal" class="w-4 h-4 text-amber-400 shrink-0"></i>
+                  <span class="text-slate-300">Terminal: Spawned subprocess `uv run pytest`</span>
+                  <span class="ml-auto text-emerald-400 text-[10px]">PASS (100%)</span>
+                </div>
+
+                <div class="p-2.5 rounded-lg bg-dark-900 border border-emerald-500/20 bg-emerald-500/[0.02] flex items-center gap-2.5">
+                  <i data-lucide="eye" class="w-4 h-4 text-emerald-400 shrink-0"></i>
+                  <span class="text-slate-200">VisionTools: Qwen verified active UI output</span>
+                  <span class="ml-auto text-emerald-400 text-[10px]">AUDITED</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Voice Feedback Simulator Widget -->
+            <div class="mt-4 pt-3 border-t border-white/[0.06] flex items-center justify-between bg-dark-900 px-3 py-2.5 rounded-xl border border-white/[0.08]">
+              <div class="flex items-center gap-2.5">
+                <i data-lucide="volume-2" class="w-4 h-4 text-brand-400"></i>
+                <span class="text-xs text-slate-300 font-mono">SAPI5 Spoken Feedback:</span>
+              </div>
+              <div class="flex items-center gap-1">
+                <span class="w-1 bg-brand-400 rounded-full sound-bar" style="animation-delay: 0.1s"></span>
+                <span class="w-1 bg-brand-400 rounded-full sound-bar" style="animation-delay: 0.3s"></span>
+                <span class="w-1 bg-brand-400 rounded-full sound-bar" style="animation-delay: 0.2s"></span>
+                <span class="w-1 bg-brand-400 rounded-full sound-bar" style="animation-delay: 0.4s"></span>
+                <span class="text-[11px] text-brand-300 font-mono ml-1.5">"All tasks completed."</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Pragnya Code Editor + Live Terminal Dock (7 Cols) -->
+          <div class="lg:col-span-7 flex flex-col bg-dark-900/60">
+            
+            <!-- Editor Tabs -->
+            <div class="bg-dark-900 border-b border-white/[0.08] px-3 flex items-center gap-1 text-xs font-mono">
+              <div class="px-3 py-2 bg-dark-950 text-brand-400 border-b-2 border-brand-500 font-medium flex items-center gap-1.5">
+                <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+                <span>news_fetcher.py</span>
+              </div>
+              <div class="px-3 py-2 text-slate-400 hover:text-slate-200 flex items-center gap-1.5 cursor-pointer">
+                <span>test_news.py</span>
+              </div>
+              <div class="px-3 py-2 text-slate-400 hover:text-slate-200 flex items-center gap-1.5 cursor-pointer">
+                <span>config.json</span>
+              </div>
+            </div>
+
+            <!-- Code Content Pane -->
+            <div class="p-4 font-mono text-xs leading-relaxed text-slate-300 overflow-x-auto flex-1 bg-dark-950/80">
+              <p><span class="text-purple-400">from</span> playwright.sync_api <span class="text-purple-400">import</span> sync_playwright</p>
+              <p><span class="text-purple-400">from</span> src.agent.groq_client <span class="text-purple-400">import</span> GroqClient</p>
+              <p class="mt-2 text-slate-500"># Pragnya autonomous agent script</p>
+              <p><span class="text-purple-400">def</span> <span class="text-sky-300">summarize_top_stories</span>():</p>
+              <p class="ml-4"><span class="text-purple-400">with</span> sync_playwright() <span class="text-purple-400">as</span> p:</p>
+              <p class="ml-8">browser = p.chromium.launch(headless=<span class="text-amber-400">True</span>)</p>
+              <p class="ml-8">page = browser.new_page()</p>
+              <p class="ml-8">page.goto(<span class="text-emerald-300">"https://news.ycombinator.com"</span>)</p>
+              <p class="ml-8">titles = page.locator(<span class="text-emerald-300">".titleline &gt; a"</span>).all_inner_texts()[:3]</p>
+              <p class="ml-8"><span class="text-purple-400">return</span> GroqClient().chat_completion(messages=[{<span class="text-emerald-300">"role"</span>: <span class="text-emerald-300">"user"</span>, <span class="text-emerald-300">"content"</span>: str(titles)}])</p>
+            </div>
+
+            <!-- Bottom Integrated Terminal Dock -->
+            <div class="border-t border-white/[0.08] bg-dark-950 p-3 font-mono text-[11px]">
+              <div class="flex items-center justify-between text-slate-400 pb-1.5 mb-1.5 border-b border-white/[0.04]">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="terminal" class="w-3.5 h-3.5 text-emerald-400"></i>
+                  <span class="text-slate-300 font-semibold">PowerShell (Interactive QProcess PTY)</span>
+                </div>
+                <span class="text-emerald-400 flex items-center gap-1">● Exit 0 (All passed)</span>
+              </div>
+              <p class="text-slate-400">PS F:\workspace\ai-desktop-agent&gt; <span class="text-white">uv run pytest tests/test_news.py</span></p>
+              <p class="text-emerald-400">collected 3 items -- 3 passed in 0.42s (100%)</p>
+              <p class="text-slate-500">All tests passed. Ready for deployment.</p>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================== BENTO GRID: SUPERPOWERS ==================== -->
+  <section id="features" class="py-20 md:py-28 relative border-t border-white/[0.06]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <!-- Section Title -->
+      <div class="max-w-2xl mx-auto text-center mb-16">
+        <h2 class="text-xs font-mono uppercase tracking-widest text-brand-400 mb-3">Enterprise Architectural Core</h2>
+        <p class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">Built for Builders Who Demand Complete Autonomy.</p>
+      </div>
+
+      <!-- Bento Grid (Irregular layout for bespoke feel) -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+        <!-- Card 1: Multi-Key Groq Failover (2 Cols) -->
+        <div id="failover" class="md:col-span-2 glass-card rounded-2xl p-7 relative overflow-hidden group">
+          <div class="flex items-start justify-between mb-6">
+            <div class="w-12 h-12 rounded-xl bg-brand-500/10 border border-brand-500/25 flex items-center justify-center text-brand-400">
+              <i data-lucide="layers" class="w-6 h-6"></i>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="px-2.5 py-1 rounded-full text-xs font-mono font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/25">
+                Zero Downtime
+              </span>
+              <button onclick="simulateRateLimit()" class="px-3 py-1 rounded-full text-xs font-mono font-semibold bg-brand-500/20 hover:bg-brand-500/30 text-brand-300 border border-brand-500/40 transition-colors flex items-center gap-1.5">
+                <i data-lucide="play" class="w-3 h-3"></i> Test 429 Failover
+              </button>
+            </div>
+          </div>
+          
+          <h3 class="text-2xl font-bold text-white mb-2">Multi-Key Groq Auto-Failover Pool (Min 1, Max 5)</h3>
+          <p class="text-slate-300 text-sm leading-relaxed max-w-xl mb-6">
+            Never get blocked by Groq free-tier rate limits. Add 1 compulsory primary key and up to 4 optional backup keys. When any key hits an HTTP 429 or TPM ceiling, Pragnya instantly re-routes the request to your next available key with 0ms interruption.
+          </p>
+
+          <!-- Interactive Failover Diagram -->
+          <div class="bg-dark-900/90 rounded-xl p-4 border border-white/[0.08] font-mono text-xs">
+            <div class="flex items-center justify-between mb-3 text-slate-400">
+              <span>Active Key Rotation Pool</span>
+              <span id="failover-log" class="text-emerald-400 font-bold">● Status: Normal Operation</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div id="box-key1" class="p-3 rounded-lg bg-dark-950 border border-white/[0.1] transition-all flex flex-col justify-between">
+                <div class="flex items-center justify-between text-[11px] text-slate-400">
+                  <span>Key #1 (Primary)</span>
+                  <span id="tag-key1" class="text-emerald-400">Active</span>
+                </div>
+                <div class="text-slate-200 mt-2 font-semibold text-xs truncate">gsk_primary_key...</div>
+                <span id="sub-key1" class="text-[10px] text-slate-500 mt-1">Ready for requests</span>
+              </div>
+
+              <div id="box-key2" class="p-3 rounded-lg bg-dark-950 border border-white/[0.05] transition-all flex flex-col justify-between">
+                <div class="flex items-center justify-between text-[11px] text-slate-400">
+                  <span>Key #2 (Backup)</span>
+                  <span id="tag-key2" class="text-slate-500">Standby</span>
+                </div>
+                <div class="text-slate-400 mt-2 font-semibold text-xs truncate">gsk_backup_alpha...</div>
+                <span id="sub-key2" class="text-[10px] text-slate-500 mt-1">Queued in pool</span>
+              </div>
+
+              <div class="p-3 rounded-lg bg-dark-950 border border-white/[0.05] flex flex-col justify-between">
+                <div class="flex items-center justify-between text-[11px] text-slate-400">
+                  <span>Key #3 (Backup)</span>
+                  <span class="text-slate-500">Standby</span>
+                </div>
+                <div class="text-slate-400 mt-2 font-semibold text-xs truncate">gsk_backup_beta...</div>
+                <span class="text-[10px] text-slate-500 mt-1">Queued in pool</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2: Multimodal Qwen Vision (1 Col) -->
+        <div class="glass-card rounded-2xl p-7 flex flex-col justify-between">
+          <div>
+            <div class="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/25 flex items-center justify-center text-purple-400 mb-6">
+              <i data-lucide="eye" class="w-6 h-6"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2">Qwen Multimodal Vision</h3>
+            <p class="text-slate-300 text-sm leading-relaxed mb-4">
+              Real-time screen inspection and visual diagnosis. Pragnya takes smart downscaled screenshots, detects active UI windows, reads error popups, and self-corrects without manual user intervention.
+            </p>
+          </div>
+          <div class="bg-dark-900 rounded-xl p-3 border border-white/[0.06] font-mono text-xs text-slate-300 flex items-center gap-2">
+            <i data-lucide="scan" class="w-4 h-4 text-purple-400"></i>
+            <span>Model: qwen/qwen3.8-27b</span>
+          </div>
+        </div>
+
+        <!-- Card 3: Autonomous Browser Engine (1 Col) -->
+        <div class="glass-card rounded-2xl p-7 flex flex-col justify-between">
+          <div>
+            <div class="w-12 h-12 rounded-xl bg-sky-500/10 border border-sky-500/25 flex items-center justify-center text-sky-400 mb-6">
+              <i data-lucide="globe" class="w-6 h-6"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2">Playwright Web Automation</h3>
+            <p class="text-slate-300 text-sm leading-relaxed mb-4">
+              Headful & headless browser orchestration. Navigate dynamic Single Page Applications, extract live financial feeds, scrape documentation, and fill complex forms autonomously.
+            </p>
+          </div>
+          <div class="bg-dark-900 rounded-xl p-3 border border-white/[0.06] font-mono text-xs text-sky-400 flex items-center gap-2">
+            <i data-lucide="check-circle" class="w-4 h-4"></i>
+            <span>Headful & Headless Execution</span>
+          </div>
+        </div>
+
+        <!-- Card 4: Hardware & Windows System Controls (2 Cols) -->
+        <div class="md:col-span-2 glass-card rounded-2xl p-7">
+          <div class="flex items-start justify-between mb-6">
+            <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center text-emerald-400">
+              <i data-lucide="sliders" class="w-6 h-6"></i>
+            </div>
+            <span class="text-xs font-mono text-slate-400">Native Windows API Integration</span>
+          </div>
+
+          <h3 class="text-2xl font-bold text-white mb-2">Direct OS & System Control</h3>
+          <p class="text-slate-300 text-sm leading-relaxed max-w-xl mb-6">
+            Control master volume via CoreAudio endpoints, adjust screen brightness with WMI, inspect high-CPU processes via psutil, or launch Windows applications with natural language commands.
+          </p>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center font-mono text-xs">
+            <div class="p-3 bg-dark-900 rounded-xl border border-white/[0.06]">
+              <i data-lucide="volume-2" class="w-4 h-4 mx-auto mb-1 text-emerald-400"></i>
+              <span class="text-slate-300">Master Volume</span>
+            </div>
+            <div class="p-3 bg-dark-900 rounded-xl border border-white/[0.06]">
+              <i data-lucide="sun" class="w-4 h-4 mx-auto mb-1 text-amber-400"></i>
+              <span class="text-slate-300">Display Brightness</span>
+            </div>
+            <div class="p-3 bg-dark-900 rounded-xl border border-white/[0.06]">
+              <i data-lucide="activity" class="w-4 h-4 mx-auto mb-1 text-purple-400"></i>
+              <span class="text-slate-300">Process Inspector</span>
+            </div>
+            <div class="p-3 bg-dark-900 rounded-xl border border-white/[0.06]">
+              <i data-lucide="power" class="w-4 h-4 mx-auto mb-1 text-rose-400"></i>
+              <span class="text-slate-300">Power Actions</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================== DEEP DIVE: PRAGNYA CODE IDE ==================== -->
+  <section id="ide" class="py-20 md:py-28 relative bg-dark-900/40 border-t border-white/[0.06]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        
+        <!-- Left: Feature Details (5 Cols) -->
+        <div class="lg:col-span-5">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/20 text-xs font-mono text-brand-400 mb-4">
+            <i data-lucide="code" class="w-3.5 h-3.5"></i> Built-in Developer Environment
+          </div>
+          <h2 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-4 leading-tight">
+            Meet Pragnya Code. <br>
+            <span class="text-slate-400">An IDE with Autonomous Brains.</span>
+          </h2>
+          <p class="text-slate-300 text-sm leading-relaxed mb-6">
+            You don't need to juggle between VS Code, Chrome, and separate AI chat windows. Pragnya Code is a full developer IDE built directly into the agent.
+          </p>
+
+          <div class="space-y-4 text-sm">
+            <div class="flex items-start gap-3">
+              <div class="w-6 h-6 rounded-lg bg-brand-500/10 border border-brand-500/20 flex items-center justify-center text-brand-400 shrink-0 mt-0.5">
+                <i data-lucide="terminal" class="w-3.5 h-3.5"></i>
+              </div>
+              <div>
+                <h4 class="font-bold text-white">Interactive PowerShell Terminal</h4>
+                <p class="text-slate-400 text-xs mt-0.5">Execute commands, run test suites, install packages, and inspect live color-coded output with custom height controls.</p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3">
+              <div class="w-6 h-6 rounded-lg bg-brand-500/10 border border-brand-500/20 flex items-center justify-center text-brand-400 shrink-0 mt-0.5">
+                <i data-lucide="wrench" class="w-3.5 h-3.5"></i>
+              </div>
+              <div>
+                <h4 class="font-bold text-white">1-Click Terminal Error Fixer</h4>
+                <p class="text-slate-400 text-xs mt-0.5">When a script crashes, click "Fix with AI". Pragnya extracts the stack trace, diagnoses the root cause, and edits the code for you.</p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3">
+              <div class="w-6 h-6 rounded-lg bg-brand-500/10 border border-brand-500/20 flex items-center justify-center text-brand-400 shrink-0 mt-0.5">
+                <i data-lucide="search" class="w-3.5 h-3.5"></i>
+              </div>
+              <div>
+                <h4 class="font-bold text-white">Quick Open (<kbd class="px-1.5 py-0.5 rounded bg-dark-800 border border-white/[0.1] text-[10px] font-mono">Ctrl+P</kbd>)</h4>
+                <p class="text-slate-400 text-xs mt-0.5">Instant fuzzy search across your entire project file tree to jump to any file in milliseconds.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Interactive Visual Card (7 Cols) -->
+        <div class="lg:col-span-7">
+          <div class="glass-card rounded-2xl border border-white/[0.1] p-6 shadow-card-dark font-mono text-xs">
+            <div class="flex items-center justify-between pb-3 mb-4 border-b border-white/[0.08]">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+                <span class="text-slate-300 font-bold">Pragnya Copilot Dock — Live AI Diagnosis</span>
+              </div>
+              <span class="text-slate-500">model: qwen-2.5-coder-32b</span>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/25 text-rose-300 mb-3 text-[11px]">
+              <span class="font-bold">Captured Terminal Crash:</span><br>
+              ZeroDivisionError: division by zero in src/calculator.py line 42
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-dark-900 border border-white/[0.08] text-slate-300 mb-4 text-[11px] leading-relaxed">
+              <span class="text-brand-400 font-bold">🤖 Pragnya AI Suggestion:</span><br>
+              Input array was empty before calculating mean. Added defensive guard clause and fallback default to prevent ZeroDivisionError.
+            </div>
+
+            <!-- Side-by-side Diff Preview -->
+            <div class="p-3 rounded-lg bg-dark-950 border border-white/[0.08] text-[11px] space-y-1">
+              <div class="text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded">- avg = sum(items) / len(items)</div>
+              <div class="text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">+ avg = sum(items) / len(items) if items else 0.0</div>
+            </div>
+
+            <div class="mt-4 flex items-center justify-end gap-2">
+              <button onclick="showToast('Applied in-place patch successfully!')" class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs flex items-center gap-1.5 transition-colors">
+                <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                <span>Apply Patch (In-Place)</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================== INTERACTIVE PLAYGROUND SIMULATOR ==================== -->
+  <section id="demo" class="py-20 md:py-28 relative border-t border-white/[0.06]">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      
+      <h2 class="text-xs font-mono uppercase tracking-widest text-brand-400 mb-3">Live Interactive Terminal Widget</h2>
+      <p class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-4">See Pragnya in Action.</p>
+      <p class="text-slate-400 text-sm max-w-xl mx-auto mb-10">Select an autonomous scenario below to see how Pragnya orchestrates tools and handles rate limits in real time.</p>
+
+      <!-- Scenario Tabs -->
+      <div class="flex flex-wrap items-center justify-center gap-2 mb-8" id="scenario-tabs">
+        <button onclick="setScenario('sc1')" id="btn-sc1" class="scenario-btn active px-4 py-2 rounded-xl text-xs font-mono font-medium border bg-brand-500/20 border-brand-500 text-white transition-all">
+          1. Clean Downloads & Organize
+        </button>
+        <button onclick="setScenario('sc2')" id="btn-sc2" class="scenario-btn px-4 py-2 rounded-xl text-xs font-mono font-medium border bg-white/[0.03] border-white/[0.08] text-slate-400 hover:text-white transition-all">
+          2. Auto-Fix Terminal Crash
+        </button>
+        <button onclick="setScenario('sc3')" id="btn-sc3" class="scenario-btn px-4 py-2 rounded-xl text-xs font-mono font-medium border bg-white/[0.03] border-white/[0.08] text-slate-400 hover:text-white transition-all">
+          3. Multi-Key 429 Failover
+        </button>
+      </div>
+
+      <!-- Simulated Terminal Box -->
+      <div class="glass-card rounded-2xl border border-white/[0.1] text-left overflow-hidden shadow-card-dark font-mono text-xs">
+        <div class="bg-dark-900 px-4 py-2.5 border-b border-white/[0.08] flex items-center justify-between text-slate-400">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-slate-600"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-slate-600"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-slate-600"></span>
+            <span class="text-slate-300 ml-2" id="sim-title">scenario: organize_downloads.pragnya</span>
+          </div>
+          <span class="text-brand-400 font-semibold" id="sim-status">Completed in 840ms</span>
+        </div>
+
+        <div class="p-6 bg-dark-950/90 min-h-[260px] space-y-3 leading-relaxed" id="sim-content">
+          <!-- Dynamic JS fills this -->
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================== DOWNLOAD & RELEASE CENTER (v1.1.0) ==================== -->
+  <section id="downloads" class="py-20 md:py-28 relative bg-dark-900/30 border-t border-white/[0.06]">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center mb-14">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/20 text-xs font-mono text-brand-400 mb-3">
+          <i data-lucide="package" class="w-3.5 h-3.5"></i> Release Distribution Center
+        </div>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">Download Pragnya for Windows</h2>
+        <p class="text-slate-400 text-sm max-w-lg mx-auto mt-2">Choose between the standalone portable executable or the full release ZIP archive.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+        
+        <!-- Release Option 1: Standalone .EXE -->
+        <div class="glass-card rounded-2xl p-7 flex flex-col justify-between border-brand-500/30 shadow-glow-amber">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="px-2.5 py-1 rounded-md text-[11px] font-mono font-bold bg-brand-500/20 text-brand-300 border border-brand-500/30">
+                RECOMMENDED
+              </span>
+              <span class="text-xs font-mono text-slate-400">~110 MB</span>
+            </div>
+            <h3 class="text-2xl font-bold text-white mb-2">Pragnya.exe (Standalone)</h3>
+            <p class="text-slate-300 text-sm leading-relaxed mb-6">
+              Zero dependencies required. Includes PySide6 runtime, Python 3.12 embedded interpreter, and pre-packaged assets. Double-click and run immediately.
+            </p>
+          </div>
+
+          <div>
+            <a href="https://github.com/adityasysnet/ai-desktop-agent-exe/releases/download/v1.1.0/Pragnya.exe" class="w-full flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl font-bold text-white bg-gradient-to-r from-brand-600 to-amber-600 hover:from-brand-500 hover:to-amber-500 shadow-lg shadow-brand-500/25 transition-all text-sm mb-3">
+              <i data-lucide="download" class="w-4 h-4"></i>
+              <span>Download Pragnya.exe</span>
+            </a>
+            <span class="text-[11px] text-slate-500 font-mono text-center block">Direct from GitHub Releases tag v1.1.0</span>
+          </div>
+        </div>
+
+        <!-- Release Option 2: Full ZIP Package -->
+        <div class="glass-card rounded-2xl p-7 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="px-2.5 py-1 rounded-md text-[11px] font-mono font-bold bg-white/[0.05] text-slate-300 border border-white/[0.1]">
+                PORTABLE ZIP
+              </span>
+              <span class="text-xs font-mono text-slate-400">~109 MB</span>
+            </div>
+            <h3 class="text-2xl font-bold text-white mb-2">Pragnya-v1.1.0-windows-x64.zip</h3>
+            <p class="text-slate-300 text-sm leading-relaxed mb-6">
+              Full compressed distribution archive containing the binary executable, release metadata, and example configuration files.
+            </p>
+          </div>
+
+          <div>
+            <a href="https://github.com/adityasysnet/ai-desktop-agent-exe/releases/download/v1.1.0/Pragnya-v1.1.0-windows-x64.zip" class="w-full flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl font-bold text-slate-200 bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.1] hover:border-slate-400 transition-all text-sm mb-3">
+              <i data-lucide="archive" class="w-4 h-4"></i>
+              <span>Download Release ZIP</span>
+            </a>
+            <a href="https://github.com/adityasysnet/ai-desktop-agent-exe/releases/tag/v1.1.0" target="_blank" class="text-[11px] text-brand-400 hover:underline font-mono text-center block">
+              View GitHub Release Notes v1.1.0 &rarr;
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================== FREQUENTLY ASKED QUESTIONS ==================== -->
+  <section id="faq" class="py-20 md:py-28 relative border-t border-white/[0.06]">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center mb-16">
+        <h2 class="text-xs font-mono uppercase tracking-widest text-brand-400 mb-3">Got Questions?</h2>
+        <p class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">Frequently Asked Questions.</p>
+      </div>
+
+      <div class="space-y-4 font-sans text-sm" id="faq-accordion">
+        
+        <!-- FAQ 1 -->
+        <div class="glass-card rounded-xl p-5 border border-white/[0.08] cursor-pointer" onclick="toggleFaq(this)">
+          <div class="flex items-center justify-between font-bold text-white text-base">
+            <span>Do I need a paid Groq subscription to use Pragnya?</span>
+            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 transition-transform"></i>
+          </div>
+          <p class="mt-3 text-slate-300 text-xs sm:text-sm leading-relaxed hidden">
+            No! You can use completely free Groq API keys. Because Groq provides generous free-tier limits, you can add 2 to 5 free keys into Pragnya's Multi-Key Pool, enabling uninterrupted high-speed development without paying a single dollar.
+          </p>
+        </div>
+
+        <!-- FAQ 2 -->
+        <div class="glass-card rounded-xl p-5 border border-white/[0.08] cursor-pointer" onclick="toggleFaq(this)">
+          <div class="flex items-center justify-between font-bold text-white text-base">
+            <span>How does the Multi-Key Auto-Failover feature work?</span>
+            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 transition-transform"></i>
+          </div>
+          <p class="mt-3 text-slate-300 text-xs sm:text-sm leading-relaxed hidden">
+            Pragnya maintains an internal active index of all your configured Groq API keys (1 compulsory, up to 4 backup). If your active key returns an HTTP 429 rate limit or token-per-minute ceiling, Pragnya intercepts the error and immediately retries the exact same request on the next available key without interrupting you.
+          </p>
+        </div>
+
+        <!-- FAQ 3 -->
+        <div class="glass-card rounded-xl p-5 border border-white/[0.08] cursor-pointer" onclick="toggleFaq(this)">
+          <div class="flex items-center justify-between font-bold text-white text-base">
+            <span>Is my local desktop and code safe?</span>
+            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 transition-transform"></i>
+          </div>
+          <p class="mt-3 text-slate-300 text-xs sm:text-sm leading-relaxed hidden">
+            Yes. Pragnya enforces a strict Path Policy Sandbox. It only operates inside authorized working directories configured by you in Settings. Any destructive action (like file deletion or overwriting) is automatically recorded in a local SQLite audit database with rollback capability.
+          </p>
+        </div>
+
+        <!-- FAQ 4 -->
+        <div class="glass-card rounded-xl p-5 border border-white/[0.08] cursor-pointer" onclick="toggleFaq(this)">
+          <div class="flex items-center justify-between font-bold text-white text-base">
+            <span>How do future updates work on other users' PCs?</span>
+            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 transition-transform"></i>
+          </div>
+          <p class="mt-3 text-slate-300 text-xs sm:text-sm leading-relaxed hidden">
+            Pragnya has a built-in GitHub Releases Auto-Updater. Simply click "🔄 Check for Updates" in Settings, and Pragnya will automatically query the repository, check if a newer release exists, download the binary, and upgrade in place.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================== FINAL CALL TO ACTION ==================== -->
+  <section class="py-20 md:py-28 relative border-t border-white/[0.06] bg-grid-pattern overflow-hidden">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+      
+      <div class="glass-card rounded-3xl p-8 sm:p-14 border border-brand-500/30 relative overflow-hidden shadow-glow-amber">
+        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-500 to-amber-600 flex items-center justify-center text-white mx-auto mb-6 shadow-lg shadow-brand-500/30">
+          <i data-lucide="sparkles" class="w-8 h-8"></i>
+        </div>
+
+        <h2 class="text-3xl sm:text-5xl font-black text-white tracking-tight mb-4">
+          Ready to Automate Your Desktop?
+        </h2>
+        <p class="text-slate-300 text-base max-w-xl mx-auto mb-8 font-normal">
+          Download the standalone Windows executable now from GitHub Releases or run from source with uv. Setup takes under 2 minutes.
+        </p>
+
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <a href="https://github.com/adityasysnet/ai-desktop-agent-exe/releases/tag/v1.1.0" target="_blank" rel="noreferrer" class="w-full sm:w-auto flex items-center justify-center gap-3 px-8 py-4 rounded-xl font-bold text-white bg-gradient-to-r from-brand-600 to-amber-600 hover:from-brand-500 hover:to-amber-500 shadow-xl shadow-brand-500/30 hover:scale-[1.02] transition-all text-base">
+            <i data-lucide="download" class="w-5 h-5"></i>
+            <span>Download Pragnya.exe (v1.1.0)</span>
+          </a>
+
+          <a href="https://github.com/adityasysnet/ai-desktop-agent" target="_blank" rel="noreferrer" class="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-semibold text-slate-300 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.1] transition-all text-base">
+            <i data-lucide="github" class="w-5 h-5"></i>
+            <span>GitHub Repository</span>
+          </a>
+        </div>
+
+        <p class="mt-6 text-xs text-slate-500 font-mono">Compatible with Windows 10 & Windows 11 (64-bit)</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="py-12 border-t border-white/[0.06] bg-dark-950 font-sans text-xs text-slate-400">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-6">
+      
+      <div class="flex items-center gap-3">
+        <div class="w-6 h-6 rounded-lg bg-brand-500 flex items-center justify-center text-white">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+        </div>
+        <span class="font-bold text-white">Pragnya Desktop Agent</span>
+        <span class="text-slate-600">|</span>
+        <span>Open Source Apache 2.0 / MIT</span>
+      </div>
+
+      <div class="flex items-center gap-6">
+        <a href="https://github.com/adityasysnet/ai-desktop-agent" target="_blank" class="hover:text-white transition-colors">GitHub Core</a>
+        <a href="https://github.com/adityasysnet/ai-desktop-agent-exe/releases/tag/v1.1.0" target="_blank" class="hover:text-white transition-colors">Release v1.1.0</a>
+        <a href="#features" class="hover:text-white transition-colors">Features</a>
+        <a href="#faq" class="hover:text-white transition-colors">FAQ</a>
+      </div>
+
+      <div class="text-slate-500 font-mono text-[11px]">
+        Built with PySide6, Groq LPUs & Playwright
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- ==================== CLIENT INTERACTIVITY SCRIPT ==================== -->
+  <script>
+    // Initialize Lucide icons
+    lucide.createIcons();
+
+    // Mobile Menu Toggle
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobile-menu');
+      menu.classList.toggle('hidden');
+    }
+
+    // Toast Notification helper
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toast-msg');
+      toastMsg.innerText = msg;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+      setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 2500);
+    }
+
+    function copyCommand(cmd) {
+      navigator.clipboard.writeText(cmd).then(() => {
+        showToast(`Copied to clipboard: ${cmd}`);
+      }).catch(() => {
+        showToast(`Copied: ${cmd}`);
+      });
+    }
+
+    // Interactive Failover Simulation
+    function simulateRateLimit() {
+      const box1 = document.getElementById('box-key1');
+      const tag1 = document.getElementById('tag-key1');
+      const sub1 = document.getElementById('sub-key1');
+
+      const box2 = document.getElementById('box-key2');
+      const tag2 = document.getElementById('tag-key2');
+      const sub2 = document.getElementById('sub-key2');
+
+      const log = document.getElementById('failover-log');
+
+      // Step 1: Hit 429
+      log.innerText = '⚠️ Key #1 returned HTTP 429 (TPM Limit). Auto-routing...';
+      log.className = 'text-amber-400 font-bold';
+
+      box1.classList.remove('border-white/[0.1]');
+      box1.classList.add('border-rose-500/80', 'bg-rose-500/10');
+      tag1.innerText = '429 Limit';
+      tag1.className = 'text-rose-400 font-bold';
+      sub1.innerText = 'Quota exceeded (bypassed)';
+
+      // Step 2: Instant jump to Key 2
+      setTimeout(() => {
+        box2.classList.remove('border-white/[0.05]');
+        box2.classList.add('border-emerald-500/80', 'bg-emerald-500/10', 'shadow-glow-emerald');
+        tag2.innerText = '● Active (Switched in 12ms)';
+        tag2.className = 'text-emerald-400 font-bold';
+        sub2.innerText = 'Streaming tokens seamlessly';
+
+        log.innerText = '✅ Zero-Downtime Failover Succeeded to Key #2!';
+        log.className = 'text-emerald-400 font-bold';
+        showToast('Auto-failover: Switched from Key 1 to Key 2 in 12ms!');
+      }, 700);
+
+      // Reset after 6 seconds
+      setTimeout(() => {
+        box1.className = 'p-3 rounded-lg bg-dark-950 border border-white/[0.1] transition-all flex flex-col justify-between';
+        tag1.innerText = 'Active';
+        tag1.className = 'text-emerald-400';
+        sub1.innerText = 'Ready for requests';
+
+        box2.className = 'p-3 rounded-lg bg-dark-950 border border-white/[0.05] transition-all flex flex-col justify-between';
+        tag2.innerText = 'Standby';
+        tag2.className = 'text-slate-500';
+        sub2.innerText = 'Queued in pool';
+
+        log.innerText = '● Status: Normal Operation';
+        log.className = 'text-emerald-400 font-bold';
+      }, 6000);
+    }
+
+    // Interactive Terminal Scenarios
+    const scenarios = {
+      sc1: {
+        title: "scenario: clean_and_organize_downloads.pragnya",
+        status: "Completed in 480ms",
+        content: `
+          <p class="text-slate-400"><span class="text-brand-400">&gt; Prompt:</span> "Organize all PDF invoices and PNG receipts from Downloads into Monthly Folders."</p>
+          <p class="text-sky-300">[1/3] <span class="text-slate-300">FileTools.list_directory("C:/Users/Adi/Downloads")</span> &rarr; Found 28 files.</p>
+          <p class="text-sky-300">[2/3] <span class="text-slate-300">FileTools.create_directory("C:/Users/Adi/Documents/Finance/2026-10")</span></p>
+          <p class="text-sky-300">[3/3] <span class="text-slate-300">FileTools.move_file()</span> &rarr; Relocated 12 invoices & 16 receipts safely.</p>
+          <p class="text-emerald-400 font-bold">&check; Task completed autonomously. Audit record #89 written to SQLite.</p>
+        `
+      },
+      sc2: {
+        title: "scenario: diagnose_terminal_error.pragnya",
+        status: "Repaired in 620ms",
+        content: `
+          <p class="text-slate-400"><span class="text-brand-400">&gt; User Action:</span> Clicked [Fix with AI] in Pragnya Code Terminal.</p>
+          <p class="text-purple-300">[Parser] Extracted traceback: <span class="text-rose-400 font-bold">ModuleNotFoundError: No module named 'playwright'</span></p>
+          <p class="text-sky-300">[Orchestrator] Invoking SystemTools: <span class="text-white">uv add playwright && uv run playwright install</span></p>
+          <p class="text-amber-300">[Terminal] Successfully installed Playwright v1.64.1 and Chromium browser binary.</p>
+          <p class="text-emerald-400 font-bold">&check; Re-ran script: Exit Code 0 (All web automation tests passed).</p>
+        `
+      },
+      sc3: {
+        title: "scenario: rate_limit_failover_demo.pragnya",
+        status: "Failed over in 14ms (Zero Downtime)",
+        content: `
+          <p class="text-slate-400"><span class="text-brand-400">&gt; Prompt:</span> "Run large batch code refactoring on 15 repository files."</p>
+          <p class="text-slate-300">[Pool Engine] Dispatching request to Key #1 (gsk_primary)...</p>
+          <p class="text-rose-400">[Groq Error] HTTP 429: Rate Limit Exceeded (TPM ceiling reached on Key #1).</p>
+          <p class="text-amber-400 font-bold">[Auto-Failover] Instant intercept! Switching to Key #2 (gsk_backup_01)...</p>
+          <p class="text-emerald-400 font-bold">&check; Response stream received from Key #2 in 340ms. Developer was never blocked.</p>
+        `
+      }
+    };
+
+    function setScenario(scId) {
+      const sc = scenarios[scId];
+      if (!sc) return;
+
+      document.getElementById('sim-title').innerText = sc.title;
+      document.getElementById('sim-status').innerText = sc.status;
+      document.getElementById('sim-content').innerHTML = sc.content;
+
+      // Update tab active state
+      document.querySelectorAll('.scenario-btn').forEach(btn => {
+        btn.classList.remove('bg-brand-500/20', 'border-brand-500', 'text-white');
+        btn.classList.add('bg-white/[0.03]', 'border-white/[0.08]', 'text-slate-400');
+      });
+
+      const activeBtn = document.getElementById(`btn-${scId}`);
+      if (activeBtn) {
+        activeBtn.classList.remove('bg-white/[0.03]', 'border-white/[0.08]', 'text-slate-400');
+        activeBtn.classList.add('bg-brand-500/20', 'border-brand-500', 'text-white');
+      }
+    }
+
+    // Default scenario load
+    setScenario('sc1');
+
+    // FAQ Accordion Toggle
+    function toggleFaq(card) {
+      const p = card.querySelector('p');
+      const icon = card.querySelector('[data-lucide="chevron-down"]');
+      if (p.classList.contains('hidden')) {
+        p.classList.remove('hidden');
+        if (icon) icon.style.transform = 'rotate(180deg)';
+      } else {
+        p.classList.add('hidden');
+        if (icon) icon.style.transform = 'rotate(0deg)';
+      }
+    }
+  </script>
+
+</body>
+</html>
