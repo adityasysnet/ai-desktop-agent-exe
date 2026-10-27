@@ -1,6 +1,6 @@
 # 🌟 Pragnya AI Desktop Agent — Project Summary
 
-> **A Secure, Autonomous AI Desktop Assistant for Windows**  
+> **A Secure, Autonomous AI Desktop Assistant for Windows**  https://adityasysnet.github.io/ai-desktop-agent-exe/
 > Built with Python 3.12, PySide6 (Qt), Groq LLM API, and modern Human-in-the-Loop OS Tooling.
 
 ---
