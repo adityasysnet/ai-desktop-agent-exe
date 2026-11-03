@@ -1,1027 +1,1078 @@
 <!DOCTYPE html>
-<html lang="en" class="dark scroll-smooth">
+<html lang="en" class="scroll-smooth">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pragnya — Autonomous AI Desktop Agent & Built-in IDE for Windows</title>
-  <meta name="description" content="Pragnya is a native autonomous AI desktop agent and IDE for Windows with multi-key Groq rate-limit failover, Qwen multimodal vision, interactive PowerShell terminal, and deep desktop automation.">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ea580c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z'/></svg>">
-  
-  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- Lucide Icons CDN -->
-  <script src="https://unpkg.com/lucide@latest"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pragnya v1.3.0 — Autonomous AI Desktop Agent & Built-in IDE for Windows</title>
+<meta name="description" content="Pragnya is a native autonomous AI desktop agent, multi-tab IDE, local document intelligence engine, and Playwright browser automator for Windows with multi-key Groq failover.">
+<meta name="theme-color" content="#05070d">
+<meta property="og:title" content="Pragnya — Autonomous AI Desktop Agent for Windows">
+<meta property="og:description" content="Six integrated suites: Chat, Code IDE, Flow, DocuBrain local RAG, Smart Watchdog, and Playwright Web Automator.">
+<meta property="og:type" content="website">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23099BF6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z'/></svg>">
 
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            brand: {
-              50: '#fff7ed',
-              100: '#ffedd5',
-              200: '#fed7aa',
-              300: '#fdba74',
-              400: '#fb923c',
-              500: '#f97316',
-              600: '#ea580c',
-              700: '#c2410c',
-              800: '#9a3412',
-              900: '#7c2d12',
-            },
-            dark: {
-              950: '#06080D',
-              900: '#0B0F17',
-              850: '#101624',
-              800: '#172033',
-              750: '#1F2B44',
-              700: '#2A3959',
-            }
-          },
-          fontFamily: {
-            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-            mono: ['"JetBrains Mono"', 'monospace'],
-          },
-          boxShadow: {
-            'glow-amber': '0 0 60px -15px rgba(249, 115, 22, 0.3)',
-            'glow-emerald': '0 0 50px -15px rgba(16, 185, 129, 0.25)',
-            'glow-blue': '0 0 60px -15px rgba(56, 189, 248, 0.2)',
-            'card-dark': '0 25px 50px -12px rgba(0, 0, 0, 0.85)',
-          },
-          animation: {
-            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-            'float': 'float 6s ease-in-out infinite',
-          },
-          keyframes: {
-            float: {
-              '0%, 100%': { transform: 'translateY(0px)' },
-              '50%': { transform: 'translateY(-8px)' },
-            }
-          }
-        }
-      }
-    }
-  </script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Sora:wght@500;600;700;800&display=swap" rel="stylesheet">
 
-  <style>
-    /* Custom subtle grid background */
-    .bg-grid-pattern {
-      background-size: 36px 36px;
-      background-image: 
-        linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
-    }
-    
-    /* Smooth radial vignette */
-    .bg-radial-glow {
-      background: radial-gradient(circle at 50% 0%, rgba(234, 88, 12, 0.18) 0%, rgba(6, 8, 13, 0) 70%);
-    }
+<style>
+:root{
+  --bg:#05070d; --bg2:#0a0f1a; --bg3:#0f1626; --line:rgba(255,255,255,.08); --line2:rgba(255,255,255,.14);
+  --text:#e8edf7; --muted:#9aa7bf; --dim:#6b7893;
+  --blue:#099BF6; --cyan:#0FC1E7; --royal:#1D74FD; --violet:#9156FC; --green:#2fe3a1; --amber:#ffb454; --rose:#ff6b86;
+  --grad:linear-gradient(110deg,#0FC1E7 0%,#099BF6 40%,#9156FC 100%);
+  --radius:20px;
+  --font:'Plus Jakarta Sans',system-ui,sans-serif; --display:'Sora','Plus Jakarta Sans',sans-serif; --mono:'JetBrains Mono',ui-monospace,monospace;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:84px}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img,svg{max-width:100%}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;cursor:pointer;background:none;border:0}
+code{font-family:var(--mono);color:var(--cyan);background:rgba(15,193,231,.08);padding:.1em .4em;border-radius:6px;font-size:.9em}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:8px}
+::selection{background:var(--blue);color:#fff}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:#1c2a47;border-radius:6px}::-webkit-scrollbar-thumb:hover{background:var(--blue)}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.skip{position:fixed;left:16px;top:-60px;z-index:200;background:var(--blue);color:#fff;padding:10px 16px;border-radius:10px;font-weight:600;transition:top .2s}
+.skip:focus{top:16px}
+.wrap{width:min(1200px,100% - 40px);margin-inline:auto}
+.grad-text{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;background-size:200% auto;animation:shift 8s linear infinite}
+@keyframes shift{to{background-position:200% center}}
+.i{width:1em;height:1em;stroke-width:2}
 
-    /* Ambient card blur */
-    .glass-card {
-      background: rgba(16, 22, 36, 0.68);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-    }
+/* background layers */
+#bg3d{position:fixed;inset:0;width:100%;height:100%;z-index:-3;pointer-events:none;transition:opacity .3s}
+.bg-grid{position:fixed;inset:0;z-index:-2;pointer-events:none;background-size:44px 44px;
+  background-image:linear-gradient(to right,rgba(255,255,255,.028) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,.028) 1px,transparent 1px);
+  mask-image:radial-gradient(ellipse 80% 70% at 50% 30%,#000 30%,transparent 80%);-webkit-mask-image:radial-gradient(ellipse 80% 70% at 50% 30%,#000 30%,transparent 80%)}
+.bg-vignette{position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(ellipse at 20% 0%,rgba(9,155,246,.12),transparent 55%),radial-gradient(ellipse at 90% 60%,rgba(145,86,252,.1),transparent 55%)}
+.cursor-glow{position:fixed;left:0;top:0;width:520px;height:520px;margin:-260px 0 0 -260px;border-radius:50%;pointer-events:none;z-index:-1;
+  background:radial-gradient(circle,rgba(9,155,246,.13),transparent 65%);transition:opacity .3s;opacity:0}
+.progress{position:fixed;left:0;top:0;height:3px;width:100%;transform-origin:0 50%;transform:scaleX(0);background:var(--grad);z-index:120}
 
-    .glass-card:hover {
-      border-color: rgba(249, 115, 22, 0.35);
-      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.9), 0 0 30px -10px rgba(249, 115, 22, 0.15);
-    }
+/* header */
+header.nav{position:sticky;top:0;z-index:100;transition:background .3s,border-color .3s,backdrop-filter .3s;border-bottom:1px solid transparent}
+header.nav.scrolled{background:rgba(5,7,13,.78);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-color:var(--line)}
+.nav-in{height:68px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{display:flex;align-items:center;gap:12px;font-family:var(--display);font-weight:700;font-size:1.25rem;letter-spacing:-.02em}
+.brand-mark{width:38px;height:38px;border-radius:12px;background:var(--grad);display:grid;place-items:center;color:#fff;box-shadow:0 8px 24px -6px rgba(9,155,246,.6);transition:transform .4s cubic-bezier(.2,.8,.2,1)}
+.brand:hover .brand-mark{transform:rotate(-12deg) scale(1.08)}
+.ver{font:500 .68rem var(--mono);padding:3px 9px;border-radius:99px;color:var(--cyan);border:1px solid rgba(15,193,231,.35);background:rgba(15,193,231,.08)}
+.links{display:none;gap:4px;align-items:center}
+.links a{position:relative;padding:8px 12px;font-size:.88rem;font-weight:500;color:var(--muted);border-radius:10px;transition:color .2s}
+.links a:hover,.links a.active{color:#fff}
+.links a::after{content:"";position:absolute;left:12px;right:12px;bottom:3px;height:2px;border-radius:2px;background:var(--grad);transform:scaleX(0);transition:transform .3s}
+.links a.active::after,.links a:hover::after{transform:scaleX(1)}
+.nav-cta{display:flex;align-items:center;gap:10px}
+.menu-btn{width:42px;height:42px;display:grid;place-items:center;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.03)}
+.mobile{position:fixed;inset:68px 0 0 0;z-index:99;background:rgba(5,7,13,.96);backdrop-filter:blur(20px);padding:24px 20px;display:flex;flex-direction:column;gap:6px;
+  opacity:0;pointer-events:none;transform:translateY(-12px);transition:.3s}
+.mobile.open{opacity:1;pointer-events:auto;transform:none}
+.mobile a{padding:14px 12px;font-size:1.15rem;font-weight:600;border-bottom:1px solid var(--line);font-family:var(--display)}
+@media(min-width:960px){.links{display:flex}.menu-btn,.mobile{display:none}}
 
-    /* Soundwave bars animation */
-    @keyframes soundwave {
-      0%, 100% { height: 4px; }
-      50% { height: 18px; }
-    }
-    .sound-bar {
-      animation: soundwave 1.2s ease-in-out infinite;
-    }
+/* buttons */
+.btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:12px 20px;border-radius:14px;font-weight:600;font-size:.92rem;border:1px solid var(--line2);background:rgba(255,255,255,.04);transition:border-color .25s,background .25s,box-shadow .25s,transform .25s;will-change:transform}
+.btn:hover{border-color:rgba(15,193,231,.55);background:rgba(255,255,255,.07)}
+.btn-primary{border:0;color:#fff;background:linear-gradient(110deg,#1D74FD,#099BF6 55%,#0FC1E7);box-shadow:0 12px 32px -10px rgba(9,155,246,.75),inset 0 1px 0 rgba(255,255,255,.35);overflow:hidden}
+.btn-primary::before{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.4) 50%,transparent 70%);transform:translateX(-120%);transition:transform .7s}
+.btn-primary:hover::before{transform:translateX(120%)}
+.btn-primary:hover{box-shadow:0 18px 44px -10px rgba(9,155,246,.9),inset 0 1px 0 rgba(255,255,255,.4);background:linear-gradient(110deg,#1D74FD,#099BF6 55%,#0FC1E7)}
+.btn-lg{padding:16px 28px;font-size:1rem;border-radius:16px}
+.btn-sm{padding:9px 14px;font-size:.8rem;border-radius:11px}
+.tag{font:500 .7rem var(--mono);padding:3px 8px;border-radius:7px;background:rgba(0,0,0,.28)}
+.mono-btn{font-family:var(--mono);font-size:.8rem}
 
-    /* Scrollbar styling */
-    ::-webkit-scrollbar {
-      width: 7px;
-      height: 7px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #06080D;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #1F2B44;
-      border-radius: 4px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #334155;
-    }
-  </style>
+/* hero */
+.hero{position:relative;padding:56px 0 40px}
+.hero-grid{display:grid;gap:48px;align-items:center}
+.pill{display:inline-flex;align-items:center;gap:10px;padding:7px 16px 7px 12px;border-radius:99px;font-size:.78rem;font-weight:500;color:var(--muted);background:rgba(255,255,255,.04);border:1px solid var(--line2);backdrop-filter:blur(10px);transition:border-color .25s}
+.pill:hover{border-color:rgba(15,193,231,.55)}
+.pill b{color:var(--text);font-weight:600}
+.dot{position:relative;width:8px;height:8px;border-radius:50%;background:var(--cyan);flex:none}
+.dot::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:1px solid var(--cyan);animation:ping 1.8s ease-out infinite}
+@keyframes ping{from{transform:scale(.6);opacity:.9}to{transform:scale(1.8);opacity:0}}
+h1{font-family:var(--display);font-weight:800;letter-spacing:-.045em;line-height:1.02;margin:24px 0 22px;font-size:clamp(2.5rem,7.2vw,5.4rem)}
+h1 .w{display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:.08em}
+h1 .w>span{display:inline-block}
+.lead{font-size:clamp(1rem,1.7vw,1.2rem);color:var(--muted);max-width:620px;margin:0 0 32px}
+.lead b{color:var(--text);font-weight:600}
+.cta-row{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:34px}
+.trust{display:flex;flex-wrap:wrap;gap:12px 26px;font:500 .74rem var(--mono);color:var(--dim)}
+.trust span{display:flex;align-items:center;gap:8px}
+.trust .i{color:var(--cyan);font-size:1rem}
+.hero-spacer{display:none}
+@media(min-width:960px){.hero{padding-top:84px}.hero-grid{grid-template-columns:1.15fr .85fr}.hero-spacer{display:block;min-height:380px}}
+
+/* app window */
+.stage{margin-top:48px;perspective:1400px}
+.win{border-radius:22px;border:1px solid var(--line2);background:linear-gradient(180deg,rgba(15,22,38,.82),rgba(7,10,18,.9));backdrop-filter:blur(16px);box-shadow:0 50px 100px -30px rgba(0,0,0,.9),0 0 90px -30px rgba(9,155,246,.45);overflow:hidden;transition:transform .25s ease-out;transform-style:preserve-3d;text-align:left}
+.win-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line);background:rgba(10,15,26,.9)}
+.lights{display:flex;gap:7px}.lights i{width:11px;height:11px;border-radius:50%;display:block}
+.lights i:nth-child(1){background:#ff5f57}.lights i:nth-child(2){background:#febc2e}.lights i:nth-child(3){background:#28c840}
+.win-title{font:500 .72rem var(--mono);color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;margin-left:10px}
+.chip{font:500 .7rem var(--mono);padding:4px 10px;border-radius:8px;color:var(--green);background:rgba(47,227,161,.08);border:1px solid rgba(47,227,161,.25);display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
+.chip::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--green)}
+.win-body{display:grid;min-height:430px}
+.pane-l{padding:20px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;justify-content:space-between;gap:16px}
+.pane-r{display:flex;flex-direction:column;min-width:0}
+@media(min-width:900px){.win-body{grid-template-columns:5fr 7fr}.pane-l{border-bottom:0;border-right:1px solid var(--line)}}
+.eyebrow{font:500 .7rem var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--cyan)}
+.msg{margin:14px 0;padding:12px 14px;border-radius:14px;font-size:.88rem;background:rgba(9,155,246,.1);border:1px solid rgba(9,155,246,.25);color:#cfe3f7}
+.msg small{display:block;font:600 .68rem var(--mono);color:var(--cyan);margin-bottom:4px}
+.steps{display:grid;gap:9px;font:400 .76rem var(--mono)}
+.step{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.03);border:1px solid var(--line);color:#c4cee0}
+.step .i{font-size:1rem;flex:none}
+.step em{margin-left:auto;font-style:normal;font-size:.62rem;color:var(--green);letter-spacing:.06em}
+.step.done{border-color:rgba(47,227,161,.3);background:rgba(47,227,161,.05)}
+.voice{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 14px;border-radius:14px;background:rgba(255,255,255,.03);border:1px solid var(--line);font:400 .74rem var(--mono);color:var(--muted)}
+.bars{display:flex;align-items:center;gap:3px;height:20px}
+.bars i{width:3px;border-radius:3px;background:var(--cyan);animation:wave 1.2s ease-in-out infinite;height:5px}
+.bars i:nth-child(2){animation-delay:.2s}.bars i:nth-child(3){animation-delay:.4s}.bars i:nth-child(4){animation-delay:.1s}.bars i:nth-child(5){animation-delay:.3s}
+@keyframes wave{0%,100%{height:5px}50%{height:19px}}
+.tabs-ed{display:flex;gap:2px;padding:0 10px;border-bottom:1px solid var(--line);background:rgba(10,15,26,.9);font:500 .74rem var(--mono);overflow-x:auto}
+.tabs-ed span{padding:10px 14px;color:var(--dim);white-space:nowrap;display:flex;align-items:center;gap:7px}
+.tabs-ed .on{color:var(--cyan);box-shadow:inset 0 -2px 0 var(--blue);background:rgba(5,7,13,.6)}
+.code{padding:18px;font:400 .76rem/1.8 var(--mono);color:#b7c3da;flex:1;overflow-x:auto;background:rgba(5,7,13,.55)}
+.code .k{color:#b08cff}.code .f{color:#7dd3fc}.code .s{color:#8be9fd}.code .c{color:#58667f}.code .r{color:#7af0c0}
+.code .caret{display:inline-block;width:7px;height:1em;background:var(--cyan);vertical-align:-2px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.dock{border-top:1px solid var(--line);padding:12px 16px;font:400 .72rem/1.7 var(--mono);background:rgba(3,5,10,.85);color:var(--muted)}
+.dock-h{display:flex;justify-content:space-between;gap:10px;padding-bottom:7px;margin-bottom:7px;border-bottom:1px solid rgba(255,255,255,.05);color:var(--text);font-weight:600;flex-wrap:wrap}
+.dock-h span:last-child{color:var(--green);font-weight:500}
+.dock .ok{color:var(--green)}.dock .w{color:#fff}
+
+/* floating hero chips */
+.float{position:absolute;display:none;align-items:center;gap:9px;padding:10px 14px;border-radius:14px;font:500 .74rem var(--mono);background:rgba(10,15,26,.82);border:1px solid var(--line2);backdrop-filter:blur(12px);box-shadow:0 20px 40px -16px rgba(0,0,0,.8);animation:bob 6s ease-in-out infinite}
+.float .i{font-size:1.1rem}
+.float.f1{top:-22px;right:4%;color:var(--cyan)}
+.float.f2{bottom:30%;left:-26px;color:var(--green);animation-delay:-2s}
+.float.f3{bottom:-20px;right:10%;color:var(--violet);animation-delay:-4s}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@media(min-width:1100px){.float{display:flex}}
+.stage-rel{position:relative}
+
+/* marquee */
+.marquee{border-block:1px solid var(--line);background:rgba(10,15,26,.45);overflow:hidden;padding:18px 0;margin-top:56px;mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent)}
+.marquee-track{display:flex;gap:44px;width:max-content;animation:scroll 38s linear infinite}
+.marquee:hover .marquee-track{animation-play-state:paused}
+.marquee-track span{display:flex;align-items:center;gap:10px;font:500 .84rem var(--mono);color:var(--dim);white-space:nowrap}
+.marquee-track .i{color:var(--blue)}
+@keyframes scroll{to{transform:translateX(-50%)}}
+
+/* sections */
+section{position:relative;padding:96px 0}
+.sec-head{max-width:760px;margin:0 auto 60px;text-align:center}
+.sec-head h2{font-family:var(--display);font-weight:700;letter-spacing:-.04em;line-height:1.08;margin:14px 0 16px;font-size:clamp(2rem,4.8vw,3.5rem)}
+.sec-head p{color:var(--muted);margin:0;font-size:1.02rem}
+
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.stat{background:rgba(10,15,26,.85);padding:30px 22px;text-align:center}
+.stat strong{display:block;font-family:var(--display);font-size:clamp(2rem,4.5vw,3.2rem);font-weight:700;letter-spacing:-.04em;line-height:1.1}
+.stat span{font:500 .74rem var(--mono);color:var(--dim);text-transform:uppercase;letter-spacing:.08em}
+@media(min-width:760px){.stats{grid-template-columns:repeat(4,1fr)}}
+
+/* spotlight cards */
+.card{position:relative;border-radius:var(--radius);border:1px solid var(--line);background:linear-gradient(180deg,rgba(15,22,38,.7),rgba(8,12,21,.8));overflow:hidden;transition:border-color .3s,transform .25s ease-out,box-shadow .3s;transform-style:preserve-3d}
+.card::before{content:"";position:absolute;inset:0;background:radial-gradient(420px circle at var(--mx,50%) var(--my,0%),rgba(9,155,246,.18),transparent 45%);opacity:0;transition:opacity .3s;pointer-events:none}
+.card:hover{border-color:rgba(15,193,231,.4);box-shadow:0 30px 60px -24px rgba(0,0,0,.9),0 0 50px -20px var(--c,var(--blue))}
+.card:hover::before{opacity:1}
+.card>*{position:relative}
+.suites{display:grid;gap:20px;grid-template-columns:1fr}
+@media(min-width:700px){.suites{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1040px){.suites{grid-template-columns:repeat(3,1fr)}}
+.suite{padding:28px;--c:var(--blue)}
+.ico{width:54px;height:54px;border-radius:16px;display:grid;place-items:center;font-size:1.5rem;margin-bottom:22px;color:var(--c);background:color-mix(in srgb,var(--c) 12%,transparent);border:1px solid color-mix(in srgb,var(--c) 32%,transparent);transition:transform .4s cubic-bezier(.2,.8,.2,1)}
+.card:hover .ico{transform:translateZ(30px) rotate(-8deg) scale(1.08)}
+.suite .num{position:absolute;right:22px;top:16px;font:700 3.6rem var(--display);letter-spacing:-.05em;color:rgba(255,255,255,.04);line-height:1}
+.suite h3{font-family:var(--display);font-size:1.28rem;margin:0 0 10px;letter-spacing:-.02em}
+.suite p{color:var(--muted);font-size:.9rem;margin:0 0 18px}
+.ticks{list-style:none;padding:0;margin:0;display:grid;gap:8px;font:400 .76rem var(--mono);color:var(--muted)}
+.ticks li{display:flex;gap:9px;align-items:flex-start}
+.ticks .i{color:var(--c);font-size:.95rem;margin-top:2px;flex:none}
+
+/* engine */
+#engine{background:linear-gradient(180deg,transparent,rgba(10,15,26,.7) 15%,rgba(10,15,26,.7) 85%,transparent)}
+.sim-tabs{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-bottom:28px}
+.sim-tab{display:flex;align-items:center;gap:9px;padding:11px 18px;border-radius:14px;font-size:.84rem;font-weight:600;border:1px solid var(--line);background:rgba(5,7,13,.7);color:var(--muted);transition:.25s;position:relative;overflow:hidden}
+.sim-tab:hover{color:#fff;border-color:rgba(15,193,231,.45)}
+.sim-tab[aria-selected="true"]{color:#fff;border-color:rgba(9,155,246,.6);background:rgba(9,155,246,.16);box-shadow:0 10px 30px -12px rgba(9,155,246,.7)}
+.sim-tab .bar{position:absolute;left:0;bottom:0;height:2px;width:0;background:var(--grad)}
+.sim{padding:28px;border-radius:24px;border:1px solid var(--line2);background:linear-gradient(180deg,rgba(15,22,38,.75),rgba(6,9,16,.9));box-shadow:0 40px 90px -40px #000}
+.hud{display:flex;flex-wrap:wrap;justify-content:space-between;gap:14px;padding-bottom:20px;margin-bottom:30px;border-bottom:1px solid var(--line);font:400 .76rem var(--mono);color:var(--muted)}
+.hud-l,.hud-r{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.hud b{color:var(--green);font-weight:600}
+.hud .badge{padding:5px 11px;border-radius:9px;background:rgba(5,7,13,.8);border:1px solid var(--line)}
+.hud .badge b{color:var(--cyan)}
+.pipe-scroll{overflow-x:auto;padding:12px 4px 4px}
+.pipe{min-width:760px;position:relative}
+.pipe-nodes{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;position:relative;z-index:1}
+.node{text-align:center;display:flex;flex-direction:column;align-items:center}
+.node-box{position:relative;width:82px;height:82px;border-radius:24px;display:grid;place-items:center;font-size:1.9rem;background:var(--bg);border:2px solid var(--line2);color:var(--dim);transition:.5s cubic-bezier(.2,.8,.2,1)}
+.node-box .n{position:absolute;right:-10px;top:-10px;font:700 .64rem var(--mono);padding:3px 8px;border-radius:99px;background:#26324d;color:#8fa0bf;transition:.4s}
+.node.on .node-box{transform:translateY(-6px) scale(1.06);color:var(--c);border-color:var(--c);box-shadow:0 0 0 6px color-mix(in srgb,var(--c) 12%,transparent),0 18px 44px -10px var(--c)}
+.node.on .node-box .n{background:var(--c);color:#04101f}
+.node h4{margin:18px 0 2px;font-size:.95rem;font-family:var(--display)}
+.node p{margin:0;font:400 .72rem var(--mono);color:var(--dim)}
+.node .sub{margin-top:10px;font:500 .68rem var(--mono);padding:3px 10px;border-radius:8px;color:var(--c);background:color-mix(in srgb,var(--c) 10%,transparent);border:1px solid color-mix(in srgb,var(--c) 28%,transparent);opacity:.55;transition:opacity .4s}
+.node.on .sub{opacity:1}
+.node:nth-child(1){--c:#0FC1E7}.node:nth-child(2){--c:#099BF6}.node:nth-child(3){--c:#2fe3a1}.node:nth-child(4){--c:#9156FC}
+.rail{position:absolute;left:12.5%;right:12.5%;top:41px;height:3px;background:rgba(255,255,255,.07);border-radius:3px;z-index:0}
+.rail i{position:absolute;inset:0 auto 0 0;width:0;border-radius:3px;background:var(--grad);box-shadow:0 0 14px rgba(15,193,231,.7);transition:width .5s ease}
+.rail i::after{content:"";position:absolute;right:-5px;top:-4px;width:11px;height:11px;border-radius:50%;background:#fff;box-shadow:0 0 14px 3px var(--cyan)}
+.term{margin-top:30px;border-radius:16px;border:1px solid var(--line);background:#03050a;overflow:hidden;font-family:var(--mono)}
+.term-h{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 16px;background:var(--bg3);border-bottom:1px solid var(--line);font-size:.74rem;color:var(--muted);flex-wrap:wrap}
+.term-h .ttl{display:flex;align-items:center;gap:12px;color:var(--text);font-weight:600}
+.term-h .st{color:var(--cyan);display:flex;align-items:center;gap:8px}
+.logs{padding:16px 18px;font-size:.76rem;line-height:1.8;min-height:176px;overflow-x:auto;color:var(--muted)}
+.logs p{margin:0;white-space:pre-wrap;animation:line .35s ease both}
+@keyframes line{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:none}}
+.logs .t{color:var(--dim)}.logs .a{color:var(--cyan)}.logs .b{color:#6bb8ff}.logs .g{color:var(--green)}.logs .v{color:#b08cff}.logs .ok{color:#7af0c0;font-weight:600}
+
+/* cli */
+.cli-grid{display:grid;gap:26px;align-items:stretch}
+@media(min-width:960px){.cli-grid{grid-template-columns:.9fr 1.1fr}}
+.cmds{display:grid;gap:12px;align-content:start}
+.cmd{display:block;width:100%;text-align:left;padding:16px 18px;border-radius:16px;border:1px solid var(--line);background:rgba(10,15,26,.7);font-family:var(--mono);font-size:.78rem;transition:.25s}
+.cmd small{display:block;color:var(--cyan);font-weight:600;margin-bottom:5px;font-size:.74rem}
+.cmd span{color:#fff;word-break:break-word}
+.cmd:hover{border-color:rgba(15,193,231,.45);transform:translateX(4px)}
+.cmd[aria-selected="true"]{border-color:rgba(9,155,246,.65);background:rgba(9,155,246,.1);box-shadow:0 12px 34px -16px rgba(9,155,246,.8)}
+.cli-term{border-radius:20px;border:1px solid var(--line2);background:#03050a;overflow:hidden;font-family:var(--mono);box-shadow:0 40px 80px -40px #000,0 0 80px -40px var(--blue);display:flex;flex-direction:column;min-height:340px}
+.cli-bar{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--bg3);font-size:.76rem;font-weight:600}
+.cli-out{padding:18px 20px;font-size:.76rem;line-height:1.85;color:#c0cadd;flex:1;overflow-x:auto}
+.cli-out p{margin:0;white-space:pre-wrap}
+.cli-out .p{color:var(--dim)}.cli-out .h{color:var(--cyan);font-weight:700}.cli-out .ok{color:var(--green)}.cli-out .strong{color:#fff}
+.cli-out .cur{display:inline-block;width:7px;height:1em;background:var(--cyan);vertical-align:-2px;animation:blink 1s steps(1) infinite}
+.cli-foot{padding:10px 16px;border-top:1px solid var(--line);display:flex;justify-content:flex-end}
+
+/* security */
+.pillars{display:grid;gap:20px}
+@media(min-width:900px){.pillars{grid-template-columns:repeat(3,1fr)}}
+.pillar{padding:30px;--c:var(--green)}
+.pillar:nth-child(2){--c:var(--blue)}.pillar:nth-child(3){--c:var(--cyan)}
+.pillar h3{font-family:var(--display);font-size:1.25rem;margin:0 0 10px;letter-spacing:-.02em}
+.pillar p{color:var(--muted);font-size:.9rem;margin:0 0 20px}
+.shield{margin:0 auto 54px;width:130px;height:130px;position:relative;display:grid;place-items:center;color:var(--green);font-size:3rem}
+.shield::before,.shield::after{content:"";position:absolute;inset:0;border-radius:50%;border:1px solid rgba(47,227,161,.4);animation:ring 3.2s ease-out infinite}
+.shield::after{animation-delay:1.6s}
+@keyframes ring{from{transform:scale(.55);opacity:1}to{transform:scale(1.6);opacity:0}}
+.shield-core{width:84px;height:84px;border-radius:26px;display:grid;place-items:center;background:rgba(47,227,161,.1);border:1px solid rgba(47,227,161,.4);box-shadow:0 0 50px -8px rgba(47,227,161,.6);position:relative;z-index:1;transform:rotate(45deg)}
+.shield-core .i{transform:rotate(-45deg)}
+
+/* compare */
+.table-card{border-radius:var(--radius);border:1px solid var(--line2);background:rgba(10,15,26,.75);overflow:hidden;backdrop-filter:blur(10px)}
+.table-scroll{overflow-x:auto}
+table{width:100%;min-width:780px;border-collapse:collapse;font-size:.88rem;text-align:left}
+th,td{padding:18px 22px}
+thead th{background:rgba(5,7,13,.9);font:600 .72rem var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--dim);text-align:center}
+thead th:first-child{text-align:left;color:#fff}
+thead th.hl{color:var(--cyan);background:rgba(9,155,246,.12)}
+tbody tr{border-top:1px solid var(--line);transition:background .2s}
+tbody tr:hover{background:rgba(255,255,255,.025)}
+tbody th{font-weight:600;color:#fff;font-size:.9rem}
+tbody th span{display:flex;align-items:center;gap:11px}
+tbody th .i{color:var(--blue);font-size:1.05rem;flex:none}
+td{text-align:center;color:var(--dim)}
+td.hl{background:rgba(9,155,246,.05);color:var(--green);font-weight:700;border-inline:1px solid rgba(9,155,246,.2)}
+td.warn{color:#b9a06a}
+@media(max-width:959px){tbody th{position:sticky;left:0;background:#0a0f1a;z-index:1;min-width:230px}}
+
+/* faq */
+.faq{display:grid;gap:12px;max-width:820px;margin:0 auto}
+.qa{border-radius:16px;border:1px solid var(--line);background:rgba(10,15,26,.7);overflow:hidden;transition:border-color .3s,background .3s}
+.qa.open{border-color:rgba(9,155,246,.45);background:rgba(15,22,38,.8)}
+.qa button{width:100%;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 22px;text-align:left;font-weight:600;font-size:.98rem;font-family:var(--display);letter-spacing:-.01em;transition:color .2s}
+.qa button:hover{color:var(--cyan)}
+.qa .chev{flex:none;display:grid;place-items:center;width:30px;height:30px;border-radius:9px;background:rgba(255,255,255,.05);transition:transform .35s,background .3s}
+.qa.open .chev{transform:rotate(180deg);background:rgba(9,155,246,.2);color:var(--cyan)}
+.qa-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .4s cubic-bezier(.2,.8,.2,1)}
+.qa.open .qa-body{grid-template-rows:1fr}
+.qa-body>div{overflow:hidden}
+.qa-body p{margin:0;padding:0 22px 22px;color:var(--muted);font-size:.92rem}
+
+/* downloads */
+.dl{display:grid;gap:22px}
+@media(min-width:860px){.dl{grid-template-columns:1fr 1fr}}
+.dl-card{padding:34px;display:flex;flex-direction:column;justify-content:space-between;gap:28px}
+.dl-card.main{border-color:rgba(9,155,246,.45);box-shadow:0 0 90px -34px var(--blue)}
+.dl-meta{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:20px;font:500 .72rem var(--mono);color:var(--dim)}
+.dl-meta .lab{padding:4px 11px;border-radius:99px;color:var(--cyan);background:rgba(15,193,231,.08);border:1px solid rgba(15,193,231,.3)}
+.dl-meta .lab.dev{color:#b08cff;background:rgba(145,86,252,.08);border-color:rgba(145,86,252,.3)}
+.dl-card h3{font-family:var(--display);font-size:1.7rem;margin:0 0 10px;letter-spacing:-.03em}
+.dl-card p{color:var(--muted);font-size:.92rem;margin:0}
+.copy{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;border-radius:12px;background:#05070d;border:1px solid var(--line);font:400 .78rem var(--mono);color:#c0cadd;transition:.25s;margin-top:10px}
+.copy:hover{border-color:rgba(15,193,231,.5)}
+.copy span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.copy .i{color:var(--dim);flex:none}
+
+/* final cta */
+.final{text-align:center;padding:70px 24px;border-radius:32px;border:1px solid var(--line2);background:radial-gradient(ellipse at 50% 0%,rgba(9,155,246,.25),transparent 65%),linear-gradient(180deg,rgba(15,22,38,.7),rgba(6,9,16,.9));margin-top:70px;position:relative;overflow:hidden}
+.final h2{font-family:var(--display);font-size:clamp(1.8rem,4.4vw,3.2rem);letter-spacing:-.04em;margin:0 0 14px;line-height:1.1}
+.final p{color:var(--muted);margin:0 auto 30px;max-width:520px}
+
+/* footer */
+footer{border-top:1px solid var(--line);padding:44px 0;color:var(--dim);font-size:.82rem}
+.foot{display:flex;flex-wrap:wrap;gap:22px;align-items:center;justify-content:space-between}
+.foot-l{display:flex;align-items:center;gap:12px;color:var(--text);font-weight:600;flex-wrap:wrap}
+.foot-l .brand-mark{width:28px;height:28px;border-radius:9px}
+.foot-links{display:flex;flex-wrap:wrap;gap:8px 22px}
+.foot-links a:hover{color:#fff}
+.built{font:400 .7rem var(--mono)}
+
+/* toast + top */
+.toast{position:fixed;right:22px;bottom:22px;z-index:150;display:flex;align-items:center;gap:10px;padding:13px 18px;border-radius:14px;background:rgba(10,15,26,.95);border:1px solid rgba(15,193,231,.45);box-shadow:0 20px 50px -10px rgba(9,155,246,.45);font:500 .78rem var(--mono);color:#bfeaff;transform:translateY(24px);opacity:0;pointer-events:none;transition:.35s cubic-bezier(.2,.8,.2,1);max-width:calc(100vw - 44px)}
+.toast.show{transform:none;opacity:1}
+.toast .i{color:var(--cyan);flex:none}
+.toast span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.totop{position:fixed;left:22px;bottom:22px;z-index:90;width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:rgba(10,15,26,.9);border:1px solid var(--line2);opacity:0;pointer-events:none;transform:translateY(12px);transition:.3s}
+.totop.show{opacity:1;pointer-events:auto;transform:none}
+.totop:hover{border-color:var(--cyan);color:var(--cyan)}
+
+/* reveal (only hidden if GSAP is loaded) */
+.gsap-ok [data-reveal]{opacity:0}
+@media(max-width:600px){section{padding:72px 0}.sim{padding:18px}th,td{padding:14px}.hud{font-size:.7rem}}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+  .marquee-track{animation:none}
+}
+</style>
 </head>
-<body class="bg-dark-950 text-slate-100 font-sans antialiased selection:bg-brand-500 selection:text-white relative overflow-x-hidden">
+<body>
+<a href="#main" class="skip">Skip to content</a>
+<div class="progress" id="progress" aria-hidden="true"></div>
+<canvas id="bg3d" aria-hidden="true"></canvas>
+<div class="bg-grid" aria-hidden="true"></div>
+<div class="bg-vignette" aria-hidden="true"></div>
+<div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
 
-  <!-- Toast Notification Container -->
-  <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none flex items-center gap-2.5 px-4 py-3 rounded-xl bg-dark-900 border border-emerald-500/40 shadow-glow-emerald text-xs font-mono text-emerald-300">
-    <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i>
-    <span id="toast-msg">Copied to clipboard!</span>
+<div class="toast" id="toast" role="status" aria-live="polite"><i data-lucide="check-circle" class="i"></i><span id="toastMsg">Copied to clipboard!</span></div>
+<button class="totop" id="toTop" aria-label="Back to top"><i data-lucide="arrow-up" class="i"></i></button>
+
+<!-- ============ NAV ============ -->
+<header class="nav" id="nav">
+  <div class="wrap nav-in">
+    <a href="#top" class="brand" aria-label="Pragnya home">
+      <span class="brand-mark"><i data-lucide="sparkles" class="i" style="font-size:1.25rem"></i></span>
+      <span>Pragnya</span><span class="ver">v1.3.0</span>
+    </a>
+    <nav class="links" aria-label="Primary">
+      <a href="#suites">6 Core Suites</a>
+      <a href="#engine">Live Engine</a>
+      <a href="#cli">CLI</a>
+      <a href="#security">Security</a>
+      <a href="#compare">Compare</a>
+      <a href="#faq">FAQ</a>
+      <a href="#downloads">Releases</a>
+    </nav>
+    <div class="nav-cta">
+      <a class="btn btn-sm magnetic" href="https://github.com/adityasysnet/ai-desktop-agent-exe" target="_blank" rel="noreferrer noopener"><i data-lucide="github" class="i"></i><span>GitHub</span></a>
+      <a class="btn btn-primary btn-sm magnetic" href="https://github.com/adityasysnet/ai-desktop-agent-exe/releases/download/v1.3.0/Pragnya.exe" target="_blank" rel="noreferrer noopener"><i data-lucide="download" class="i"></i><span>Download</span></a>
+      <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false" aria-controls="mobile"><i data-lucide="menu" class="i" style="font-size:1.2rem"></i></button>
+    </div>
+  </div>
+</header>
+<div class="mobile" id="mobile">
+  <a href="#suites">6 Core Suites</a>
+  <a href="#engine">⚡ Live Engine Simulator</a>
+  <a href="#cli">Terminal CLI</a>
+  <a href="#security">Security &amp; Sandbox</a>
+  <a href="#compare">Comparison Matrix</a>
+  <a href="#faq">FAQ</a>
+  <a href="#downloads">Downloads &amp; Releases</a>
+</div>
+
+<main id="main">
+<!-- ============ HERO ============ -->
+<section class="hero" id="top" style="padding-bottom:40px">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <a class="pill" data-reveal href="https://github.com/adityasysnet/ai-desktop-agent-exe/releases/download/v1.3.0/Pragnya.exe" target="_blank" rel="noreferrer noopener">
+          <span class="dot"></span><b>Official Release v1.3.0 Available</b>
+          <span style="color:var(--cyan)">Playwright • CLI • Watchdog • IDE →</span>
+        </a>
+        <h1 id="heroTitle" aria-label="Your Operating System, Supercharged with Autonomy.">
+          <span class="w"><span>Your</span></span> <span class="w"><span>Operating</span></span> <span class="w"><span>System,</span></span><br>
+          <span class="w"><span class="grad-text">Supercharged</span></span> <span class="w"><span class="grad-text">with</span></span> <span class="w"><span class="grad-text">Autonomy.</span></span>
+        </h1>
+        <p class="lead" data-reveal>Pragnya is a comprehensive autonomous AI desktop platform for Windows. It features 6 integrated operational suites: <b>Pragnya Chat</b>, <b>Pragnya Code IDE</b>, <b>Pragnya Flow</b>, <b>DocuBrain Local RAG</b>, <b>Smart Watchdog Automator</b>, and <b>Playwright Web Automator</b>, powered by multi-key Groq rate-limit failover.</p>
+        <div class="cta-row" data-reveal>
+          <a class="btn btn-primary btn-lg magnetic" href="https://github.com/adityasysnet/ai-desktop-agent-exe/releases/download/v1.3.0/Pragnya.exe" target="_blank" rel="noreferrer noopener">
+            <i data-lucide="download" class="i"></i><span>Download Pragnya.exe</span><span class="tag">v1.3.0</span>
+          </a>
+          <button class="btn btn-lg mono-btn magnetic" data-copy='pragnya run "Summarize Downloads folder" -y' aria-label="Copy example command">
+            <i data-lucide="terminal" class="i" style="color:var(--cyan)"></i><span>pragnya "prompt"</span><i data-lucide="copy" class="i" style="color:var(--dim)"></i>
+          </button>
+        </div>
+        <div class="trust" data-reveal>
+          <span><i data-lucide="shield-check" class="i" style="color:var(--green)"></i>Safe Path Sandbox</span>
+          <span><i data-lucide="zap" class="i"></i>Sub-Second TTFT (Groq)</span>
+          <span><i data-lucide="layers" class="i"></i>Auto-Failover (1–5 Keys)</span>
+          <span><i data-lucide="globe" class="i"></i>Playwright Web Automation</span>
+        </div>
+      </div>
+      <div class="hero-spacer" aria-hidden="true"></div>
+    </div>
+
+    <!-- App window -->
+    <div class="stage stage-rel" data-reveal>
+      <div class="float f1" aria-hidden="true"><i data-lucide="globe" class="i"></i>Chromium · headless</div>
+      <div class="float f2" aria-hidden="true"><i data-lucide="folder-check" class="i"></i>4 files organized</div>
+      <div class="float f3" aria-hidden="true"><i data-lucide="key" class="i"></i>Key pool: 3/5 active</div>
+      <div class="win" data-tilt="4" id="heroWin">
+        <div class="win-bar">
+          <div class="lights" aria-hidden="true"><i></i><i></i><i></i></div>
+          <div class="win-title">Pragnya Desktop Agent — Chat | Code | Flow | DocuBrain | Watchdog | Web</div>
+          <span class="chip">Pool: 3/5 Keys Active</span>
+        </div>
+        <div class="win-body">
+          <div class="pane-l">
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:center"><span class="eyebrow">Autonomous Workflow</span><span class="eyebrow" style="color:var(--green)">● Live</span></div>
+              <div class="msg"><small>User Instruction:</small>"Scrape top 10 stories from HackerNews, save to data/hn.csv, and organize incoming invoice PDFs in Downloads."</div>
+              <div class="steps" id="heroSteps">
+                <div class="step"><i data-lucide="globe" class="i" style="color:var(--cyan)"></i><span>Playwright: Scraped table to <code>data/hn.csv</code></span><em>10 ROWS</em></div>
+                <div class="step"><i data-lucide="folder-check" class="i" style="color:var(--green)"></i><span>Watchdog: Organized 4 files into <code>Invoices/</code></span><em>ORGANIZED</em></div>
+                <div class="step"><i data-lucide="file-spreadsheet" class="i" style="color:var(--violet)"></i><span>Ledger: Parsed $141.60 into ledger.csv</span><em>LEDGER+</em></div>
+                <div class="step done"><i data-lucide="check" class="i" style="color:var(--green)"></i><span>Agent: Completed all actions autonomously</span><em>DONE</em></div>
+              </div>
+            </div>
+            <div class="voice">
+              <span style="display:flex;align-items:center;gap:10px"><i data-lucide="volume-2" class="i" style="color:var(--cyan)"></i>Spoken Audio:</span>
+              <span style="display:flex;align-items:center;gap:10px"><span class="bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span style="color:#bfeaff">"All tasks finished."</span></span>
+            </div>
+          </div>
+          <div class="pane-r">
+            <div class="tabs-ed"><span class="on"><i data-lucide="file-code" class="i"></i>web_scraper.py</span><span>watchdog.py</span><span>config.json</span></div>
+            <div class="code" aria-label="Example Python automation script"><div><span class="k">from</span> src.browser.recipes <span class="k">import</span> WebRecipes</div>
+<div><span class="k">from</span> src.automation.watchdog_engine <span class="k">import</span> WatchdogEngine</div>
+<div class="c"># Pragnya autonomous automation workflow</div>
+<div><span class="k">def</span> <span class="f">execute_desktop_automation</span>():</div>
+<div style="padding-left:2ch">recipes = WebRecipes()</div>
+<div style="padding-left:2ch">recipes.table_to_csv_recipe(<span class="s">"https://news.ycombinator.com"</span>, output_csv_path=<span class="s">"data/hn.csv"</span>)</div>
+<div style="padding-left:2ch">watchdog = WatchdogEngine()</div>
+<div style="padding-left:2ch">watchdog.scan_now()</div>
+<div style="padding-left:2ch"><span class="k">return</span> <span class="r">"Automation complete"</span><span class="caret"></span></div></div>
+            <div class="dock">
+              <div class="dock-h"><span><i data-lucide="terminal" class="i" style="color:var(--cyan)"></i> PowerShell (Interactive QProcess Terminal)</span><span>● Exit 0 (136 tests passed)</span></div>
+              <div>PS F:\workspace\ai-desktop-agent&gt; <span class="w">pragnya "check cpu usage"</span></div>
+              <div class="ok">✔ Result: CPU is running at 18.2%, Memory: 6.4 GB / 15.8 GB</div>
+              <div style="color:var(--dim)">Pragnya CLI command executed successfully.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <!-- Ambient Light Orbs -->
-  <div class="fixed top-0 left-1/2 -translate-x-1/2 w-[1100px] h-[600px] bg-radial-glow pointer-events-none -z-10"></div>
-  <div class="fixed top-[35%] right-[-10%] w-[550px] h-[550px] bg-brand-600/8 blur-[130px] rounded-full pointer-events-none -z-10"></div>
-  <div class="fixed top-[65%] left-[-10%] w-[550px] h-[550px] bg-blue-500/8 blur-[150px] rounded-full pointer-events-none -z-10"></div>
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee-track" id="marquee"></div>
+  </div>
+</section>
 
-  <!-- ==================== HEADER / NAV ==================== -->
-  <header class="sticky top-0 z-40 backdrop-blur-2xl bg-dark-950/85 border-b border-white/[0.07] transition-all">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-      
-      <!-- Brand Logo -->
-      <a href="#" class="flex items-center gap-3 group">
-        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 via-brand-600 to-amber-600 flex items-center justify-center text-white shadow-lg shadow-brand-500/25 group-hover:scale-105 transition-transform">
-          <i data-lucide="sparkles" class="w-5 h-5"></i>
-        </div>
-        <div class="flex items-center gap-2">
-          <span class="text-xl font-bold tracking-tight text-white font-sans">Pragnya</span>
-          <span class="text-[11px] font-mono font-medium px-2 py-0.5 rounded-full bg-brand-500/10 text-brand-400 border border-brand-500/25">v1.1.0</span>
-        </div>
-      </a>
+<!-- ============ STATS ============ -->
+<section style="padding:30px 0 40px">
+  <div class="wrap">
+    <div class="stats" data-reveal>
+      <div class="stat"><strong class="grad-text" data-count="6">0</strong><span>Integrated suites</span></div>
+      <div class="stat"><strong class="grad-text" data-count="55">0</strong><span>Agent tools</span></div>
+      <div class="stat"><strong class="grad-text" data-count="136">0</strong><span>Tests passing</span></div>
+      <div class="stat"><strong class="grad-text">1–5</strong><span>Groq keys in failover</span></div>
+    </div>
+  </div>
+</section>
 
-      <!-- Desktop Nav -->
-      <nav class="hidden md:flex items-center gap-7 text-sm font-medium text-slate-300">
-        <a href="#features" class="hover:text-white transition-colors">Features</a>
-        <a href="#ide" class="hover:text-white transition-colors">Pragnya Code IDE</a>
-        <a href="#failover" class="hover:text-white transition-colors flex items-center gap-1.5">
-          <span>Multi-Key Engine</span>
-          <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-        </a>
-        <a href="#demo" class="hover:text-white transition-colors">Interactive Demo</a>
-        <a href="#downloads" class="hover:text-white transition-colors">Releases</a>
-        <a href="#faq" class="hover:text-white transition-colors">FAQ</a>
-      </nav>
+<!-- ============ SUITES ============ -->
+<section id="suites">
+  <div class="wrap">
+    <div class="sec-head" data-reveal>
+      <div class="eyebrow">Modular Desktop Architecture</div>
+      <h2>The 6 Built-in <span class="grad-text">Operational Suites</span></h2>
+      <p>Everything you need to automate your system, code applications, inspect documents, and scrape the web in one lightweight binary.</p>
+    </div>
+    <div class="suites">
+      <article class="card suite" data-tilt="6" data-reveal style="--c:#099BF6">
+        <span class="num" aria-hidden="true">01</span>
+        <div class="ico"><i data-lucide="message-square" class="i"></i></div>
+        <h3>💬 Pragnya Chat</h3>
+        <p>Claude.ai-inspired conversation interface with full chat search, conversation archiving, Markdown export, and multi-key Groq model selection.</p>
+        <ul class="ticks"><li><i data-lucide="check" class="i"></i>Date-grouped history</li><li><i data-lucide="check" class="i"></i>Human-in-the-loop approvals</li></ul>
+      </article>
+      <article class="card suite" id="ide" data-tilt="6" data-reveal style="--c:#4d8dff">
+        <span class="num" aria-hidden="true">02</span>
+        <div class="ico"><i data-lucide="code" class="i"></i></div>
+        <h3>💻 Pragnya Code IDE</h3>
+        <p>Integrated code editor with syntax highlighting, project file tree, live PowerShell terminal runner, and inline AI code repair.</p>
+        <ul class="ticks"><li><i data-lucide="check" class="i"></i>Multi-tab editor</li><li><i data-lucide="check" class="i"></i>1-Click script execution</li></ul>
+      </article>
+      <article class="card suite" data-tilt="6" data-reveal style="--c:#9156FC">
+        <span class="num" aria-hidden="true">03</span>
+        <div class="ico"><i data-lucide="workflow" class="i"></i></div>
+        <h3>🎨 Pragnya Flow</h3>
+        <p>Visual Node Studio powered by LangGraph. Connect triggers, LLM nodes, and OS actions into reusable visual workflows.</p>
+        <ul class="ticks"><li><i data-lucide="check" class="i"></i>Drag-and-drop canvas</li><li><i data-lucide="check" class="i"></i>State checkpointing</li></ul>
+      </article>
+      <article class="card suite" data-tilt="6" data-reveal style="--c:#0FC1E7">
+        <span class="num" aria-hidden="true">04</span>
+        <div class="ico"><i data-lucide="book-open" class="i"></i></div>
+        <h3>📚 DocuBrain (Local RAG)</h3>
+        <p>Local document intelligence engine. Automatically ingests PDF, Word (.docx), and Excel (.xlsx) files with SQLite FTS5 hybrid search.</p>
+        <ul class="ticks"><li><i data-lucide="check" class="i"></i>Zero data leakage</li><li><i data-lucide="check" class="i"></i>Hybrid semantic search</li></ul>
+      </article>
+      <article class="card suite" id="watchdog" data-tilt="6" data-reveal style="--c:#2fe3a1">
+        <span class="num" aria-hidden="true">05</span>
+        <div class="ico"><i data-lucide="folder-search" class="i"></i></div>
+        <h3>📂 Smart Watchdog</h3>
+        <p>Silent background filesystem automator. Cleans messy Downloads/Desktop folders, sorts files, and parses invoices directly into a CSV ledger.</p>
+        <ul class="ticks"><li><i data-lucide="check" class="i"></i>Invoice &amp; Receipt Ledger</li><li><i data-lucide="check" class="i"></i>Instant thread stop event</li></ul>
+      </article>
+      <article class="card suite" id="browser" data-tilt="6" data-reveal style="--c:#09b6f6">
+        <span class="num" aria-hidden="true">06</span>
+        <div class="ico"><i data-lucide="globe" class="i"></i></div>
+        <h3>🌐 Web Automator</h3>
+        <p>Playwright-driven autonomous browser robot. Scrapes tables to CSV, generates high-res PDF archives, fills forms, and takes full screenshots.</p>
+        <ul class="ticks"><li><i data-lucide="check" class="i"></i>Table to CSV Scraper</li><li><i data-lucide="check" class="i"></i>Full-Page PDF Exporter</li></ul>
+      </article>
+    </div>
+  </div>
+</section>
 
-      <!-- Action Buttons -->
-      <div class="flex items-center gap-3">
-        <a href="https://github.com/adityasysnet/ai-desktop-agent" target="_blank" rel="noreferrer" class="hidden sm:flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-300 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] transition-all">
-          <i data-lucide="github" class="w-4 h-4"></i>
-          <span>GitHub</span>
-        </a>
-        
-        <a href="https://github.com/adityasysnet/ai-desktop-agent-exe/releases/tag/v1.1.0" target="_blank" rel="noreferrer" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold text-white bg-gradient-to-r from-brand-600 via-brand-500 to-amber-600 hover:from-brand-500 hover:to-amber-500 shadow-md shadow-brand-500/25 hover:shadow-brand-500/35 transition-all hover:-translate-y-0.5 active:translate-y-0">
-          <i data-lucide="download" class="w-4 h-4"></i>
-          <span>Download v1.1.0</span>
-        </a>
-
-        <!-- Mobile Menu Toggle -->
-        <button onclick="toggleMobileMenu()" class="md:hidden p-2 text-slate-400 hover:text-white">
-          <i data-lucide="menu" class="w-5 h-5"></i>
-        </button>
-      </div>
-
+<!-- ============ ENGINE ============ -->
+<section id="engine">
+  <div class="wrap">
+    <div class="sec-head" data-reveal>
+      <div class="pill" style="color:var(--cyan);border-color:rgba(15,193,231,.35)"><span class="dot"></span>LIVE ARCHITECTURE ENGINE</div>
+      <h2>How Pragnya Executes <span class="grad-text">Autonomously</span></h2>
+      <p>From natural language input to multi-key Groq LPU routing, strict filesystem sandboxing, and sub-second tool execution. Pick a workflow to watch the pipeline run.</p>
     </div>
 
-    <!-- Mobile Nav Dropdown -->
-    <div id="mobile-menu" class="hidden md:hidden px-4 pt-3 pb-5 border-b border-white/[0.08] bg-dark-950/95 space-y-3 font-medium text-sm text-slate-300">
-      <a href="#features" onclick="toggleMobileMenu()" class="block py-1 hover:text-white">Features</a>
-      <a href="#ide" onclick="toggleMobileMenu()" class="block py-1 hover:text-white">Pragnya Code IDE</a>
-      <a href="#failover" onclick="toggleMobileMenu()" class="block py-1 hover:text-white">Multi-Key Engine</a>
-      <a href="#demo" onclick="toggleMobileMenu()" class="block py-1 hover:text-white">Interactive Demo</a>
-      <a href="#downloads" onclick="toggleMobileMenu()" class="block py-1 hover:text-white">Downloads & Releases</a>
-      <a href="#faq" onclick="toggleMobileMenu()" class="block py-1 hover:text-white">FAQ</a>
+    <div class="sim-tabs" role="tablist" aria-label="Workflow scenarios" data-reveal>
+      <button class="sim-tab" role="tab" id="simtab-0" aria-selected="true" aria-controls="simpanel"><i data-lucide="globe" class="i" style="color:var(--cyan)"></i>1. Web Scraping &amp; CSV<span class="bar"></span></button>
+      <button class="sim-tab" role="tab" id="simtab-1" aria-selected="false" aria-controls="simpanel" tabindex="-1"><i data-lucide="folder-search" class="i" style="color:var(--green)"></i>2. Watchdog Invoice Ledger<span class="bar"></span></button>
+      <button class="sim-tab" role="tab" id="simtab-2" aria-selected="false" aria-controls="simpanel" tabindex="-1"><i data-lucide="book-open" class="i" style="color:var(--cyan)"></i>3. DocuBrain Local RAG<span class="bar"></span></button>
+      <button class="sim-tab" role="tab" id="simtab-3" aria-selected="false" aria-controls="simpanel" tabindex="-1"><i data-lucide="code" class="i" style="color:var(--violet)"></i>4. Code IDE &amp; Terminal Run<span class="bar"></span></button>
     </div>
-  </header>
 
-  <!-- ==================== HERO SECTION ==================== -->
-  <section class="relative pt-16 pb-20 md:pt-24 md:pb-28 bg-grid-pattern overflow-hidden">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-      
-      <!-- Release Announcement Badge -->
-      <a href="https://github.com/adityasysnet/ai-desktop-agent-exe/releases/tag/v1.1.0" target="_blank" rel="noreferrer" class="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.1] text-xs font-medium text-slate-300 mb-8 backdrop-blur-md hover:border-brand-500/50 hover:bg-white/[0.06] transition-all cursor-pointer group shadow-lg">
-        <span class="flex h-2 w-2 relative">
-          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75"></span>
-          <span class="relative inline-flex rounded-full h-2 w-2 bg-brand-500"></span>
-        </span>
-        <span class="text-slate-200 font-semibold">Official Release v1.1.0</span>
-        <span class="text-slate-600">|</span>
-        <span class="text-brand-400 group-hover:underline flex items-center gap-1">
-          Zero-Downtime Multi-Key Failover & GPT-OSS 120B
-          <i data-lucide="arrow-right" class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"></i>
-        </span>
-      </a>
-
-      <!-- Main Headline -->
-      <h1 class="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-white max-w-4xl mx-auto leading-[1.08] mb-6">
-        Your Operating System, <br>
-        <span class="bg-gradient-to-r from-brand-400 via-amber-300 to-orange-500 bg-clip-text text-transparent">
-          Supercharged with Autonomy.
-        </span>
-      </h1>
-
-      <!-- Subheadline -->
-      <p class="text-lg sm:text-xl text-slate-300 max-w-2xl mx-auto font-normal leading-relaxed mb-10">
-        Pragnya is a native autonomous AI desktop agent and IDE for Windows. It controls browsers with Playwright, codes in an interactive IDE, heals terminal errors, and executes with resilient multi-key Groq inference.
-      </p>
-
-      <!-- Dual Download CTA -->
-      <div class="flex flex-col sm:flex-row items-center justify-center gap-4 max-w-lg mx-auto mb-12">
-        <a href="https://github.com/adityasysnet/ai-desktop-agent-exe/releases/tag/v1.1.0" target="_blank" rel="noreferrer" class="w-full sm:w-auto flex items-center justify-center gap-3 px-8 py-4 rounded-xl font-bold text-white bg-gradient-to-r from-brand-600 via-brand-500 to-amber-600 hover:from-brand-500 hover:to-amber-500 shadow-xl shadow-brand-500/30 hover:shadow-brand-500/50 transition-all hover:-translate-y-0.5 active:translate-y-0 text-base">
-          <i data-lucide="download" class="w-5 h-5"></i>
-          <span>Download Pragnya.exe</span>
-          <span class="text-xs font-mono font-normal opacity-90 px-2 py-0.5 rounded bg-black/25">v1.1.0</span>
-        </a>
-
-        <button onclick="copyCommand('uv run python main.py')" class="w-full sm:w-auto flex items-center justify-center gap-2.5 px-6 py-4 rounded-xl font-mono text-xs text-slate-300 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.1] hover:border-slate-500 transition-all group">
-          <i data-lucide="terminal" class="w-4 h-4 text-brand-400"></i>
-          <span>uv run python main.py</span>
-          <i data-lucide="copy" class="w-3.5 h-3.5 text-slate-500 group-hover:text-white transition-colors"></i>
-        </button>
-      </div>
-
-      <!-- Trust Badges -->
-      <div class="flex flex-wrap items-center justify-center gap-6 sm:gap-10 text-xs font-mono text-slate-400">
-        <div class="flex items-center gap-2">
-          <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
-          <span>Safe Path Sandbox</span>
-        </div>
-        <div class="flex items-center gap-2">
-          <i data-lucide="zap" class="w-4 h-4 text-amber-400"></i>
-          <span>Sub-Second TTFT (Groq)</span>
-        </div>
-        <div class="flex items-center gap-2">
-          <i data-lucide="layers" class="w-4 h-4 text-sky-400"></i>
-          <span>Auto-Failover (1-5 Keys)</span>
-        </div>
-        <div class="flex items-center gap-2">
-          <i data-lucide="volume-2" class="w-4 h-4 text-purple-400"></i>
-          <span>SAPI5 Spoken Voice</span>
+    <div class="sim" id="simpanel" role="tabpanel" aria-live="off" data-reveal>
+      <div class="hud">
+        <div class="hud-l"><span class="dot" style="background:var(--green)"></span><span style="color:#fff;font-weight:500">Groq Inference Engine:</span><b id="tModel">llama-3.3-70b-versatile</b></div>
+        <div class="hud-r">
+          <span class="badge">⚡ TTFT: <b id="tTtft">185 ms</b></span>
+          <span class="badge">🔑 Key Pool: <b id="tKeys" style="color:var(--green)">3 / 5 Ready</b></span>
+          <span class="badge">🛡️ Sandbox: <b>Enforced</b></span>
         </div>
       </div>
-
-      <!-- ==================== HERO APP WINDOW MOCKUP ==================== -->
-      <div class="mt-14 relative max-w-5xl mx-auto rounded-2xl glass-card border border-white/[0.1] shadow-card-dark overflow-hidden transition-all text-left">
-        
-        <!-- Window Title Bar -->
-        <div class="bg-dark-900/95 border-b border-white/[0.08] px-4 py-3 flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <span class="w-3 h-3 rounded-full bg-rose-500/80 inline-block"></span>
-            <span class="w-3 h-3 rounded-full bg-amber-500/80 inline-block"></span>
-            <span class="w-3 h-3 rounded-full bg-emerald-500/80 inline-block"></span>
-            <span class="text-xs font-mono text-slate-400 ml-2">Pragnya Desktop Agent — [Model: openai/gpt-oss-120b]</span>
-          </div>
-          <div class="flex items-center gap-3 text-slate-400 text-xs font-mono">
-            <span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center gap-1.5">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Pool: 3/5 Keys Active
-            </span>
-            <span class="hidden sm:inline-block text-slate-500">v1.1.0</span>
+      <div class="pipe-scroll">
+        <div class="pipe">
+          <div class="rail" aria-hidden="true"><i id="railFill"></i></div>
+          <div class="pipe-nodes">
+            <div class="node" id="node0"><div class="node-box"><i data-lucide="mic" class="i"></i><span class="n">01</span></div><h4>Input &amp; Intent</h4><p id="n1desc">Voice / Text Prompt</p><span class="sub">Natural Language</span></div>
+            <div class="node" id="node1"><div class="node-box"><i data-lucide="cpu" class="i"></i><span class="n">02</span></div><h4>Groq LPU Engine</h4><p>Multi-Key Failover (1–5)</p><span class="sub">750+ T/s Inference</span></div>
+            <div class="node" id="node2"><div class="node-box"><i data-lucide="shield-check" class="i"></i><span class="n">03</span></div><h4>Sandbox Guard</h4><p>Safe Path &amp; HITL</p><span class="sub">Risk Level: Low</span></div>
+            <div class="node" id="node3"><div class="node-box" id="n4box"><i data-lucide="globe" class="i"></i><span class="n">04</span></div><h4 id="n4title">Playwright Browser</h4><p id="n4desc">Headless Chromium</p><span class="sub" id="n4badge">Table → CSV Export</span></div>
           </div>
         </div>
-
-        <!-- Window Body (Split Pane: Agent Chat + Live IDE Execution) -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 min-h-[460px] bg-dark-950/70 font-sans">
-          
-          <!-- Left: Agent Interaction & Tool Logs (5 Cols) -->
-          <div class="lg:col-span-5 p-5 border-b lg:border-b-0 lg:border-r border-white/[0.08] flex flex-col justify-between">
-            <div>
-              <div class="flex items-center justify-between mb-4">
-                <span class="text-xs font-mono uppercase tracking-wider text-slate-400">Autonomous Workflow</span>
-                <span class="text-[11px] text-brand-400 font-mono">Run #142 • Live</span>
-              </div>
-
-              <!-- User Prompt Bubble -->
-              <div class="mb-4 bg-brand-500/10 border border-brand-500/20 rounded-xl p-3 text-sm text-slate-200">
-                <p class="font-medium text-brand-300 text-xs mb-1">User Prompt:</p>
-                "Fetch top 3 HackerNews stories, write an automated scraper in Python, run tests in terminal, and verify UI state."
-              </div>
-
-              <!-- Agent Action Steps -->
-              <div class="space-y-2.5 font-mono text-xs">
-                <div class="p-2.5 rounded-lg bg-dark-900 border border-white/[0.05] flex items-center gap-2.5">
-                  <i data-lucide="globe" class="w-4 h-4 text-sky-400 shrink-0"></i>
-                  <span class="text-slate-300">BrowserTool: Scraped HackerNews via Playwright</span>
-                  <span class="ml-auto text-emerald-400 text-[10px]">200 OK</span>
-                </div>
-
-                <div class="p-2.5 rounded-lg bg-dark-900 border border-white/[0.05] flex items-center gap-2.5">
-                  <i data-lucide="file-code-2" class="w-4 h-4 text-brand-400 shrink-0"></i>
-                  <span class="text-slate-300">FileTools: Generated `src/news_fetcher.py`</span>
-                  <span class="ml-auto text-emerald-400 text-[10px]">SAVED</span>
-                </div>
-
-                <div class="p-2.5 rounded-lg bg-dark-900 border border-white/[0.05] flex items-center gap-2.5">
-                  <i data-lucide="terminal" class="w-4 h-4 text-amber-400 shrink-0"></i>
-                  <span class="text-slate-300">Terminal: Spawned subprocess `uv run pytest`</span>
-                  <span class="ml-auto text-emerald-400 text-[10px]">PASS (100%)</span>
-                </div>
-
-                <div class="p-2.5 rounded-lg bg-dark-900 border border-emerald-500/20 bg-emerald-500/[0.02] flex items-center gap-2.5">
-                  <i data-lucide="eye" class="w-4 h-4 text-emerald-400 shrink-0"></i>
-                  <span class="text-slate-200">VisionTools: Qwen verified active UI output</span>
-                  <span class="ml-auto text-emerald-400 text-[10px]">AUDITED</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Voice Feedback Simulator Widget -->
-            <div class="mt-4 pt-3 border-t border-white/[0.06] flex items-center justify-between bg-dark-900 px-3 py-2.5 rounded-xl border border-white/[0.08]">
-              <div class="flex items-center gap-2.5">
-                <i data-lucide="volume-2" class="w-4 h-4 text-brand-400"></i>
-                <span class="text-xs text-slate-300 font-mono">SAPI5 Spoken Feedback:</span>
-              </div>
-              <div class="flex items-center gap-1">
-                <span class="w-1 bg-brand-400 rounded-full sound-bar" style="animation-delay: 0.1s"></span>
-                <span class="w-1 bg-brand-400 rounded-full sound-bar" style="animation-delay: 0.3s"></span>
-                <span class="w-1 bg-brand-400 rounded-full sound-bar" style="animation-delay: 0.2s"></span>
-                <span class="w-1 bg-brand-400 rounded-full sound-bar" style="animation-delay: 0.4s"></span>
-                <span class="text-[11px] text-brand-300 font-mono ml-1.5">"All tasks completed."</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Right: Pragnya Code Editor + Live Terminal Dock (7 Cols) -->
-          <div class="lg:col-span-7 flex flex-col bg-dark-900/60">
-            
-            <!-- Editor Tabs -->
-            <div class="bg-dark-900 border-b border-white/[0.08] px-3 flex items-center gap-1 text-xs font-mono">
-              <div class="px-3 py-2 bg-dark-950 text-brand-400 border-b-2 border-brand-500 font-medium flex items-center gap-1.5">
-                <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
-                <span>news_fetcher.py</span>
-              </div>
-              <div class="px-3 py-2 text-slate-400 hover:text-slate-200 flex items-center gap-1.5 cursor-pointer">
-                <span>test_news.py</span>
-              </div>
-              <div class="px-3 py-2 text-slate-400 hover:text-slate-200 flex items-center gap-1.5 cursor-pointer">
-                <span>config.json</span>
-              </div>
-            </div>
-
-            <!-- Code Content Pane -->
-            <div class="p-4 font-mono text-xs leading-relaxed text-slate-300 overflow-x-auto flex-1 bg-dark-950/80">
-              <p><span class="text-purple-400">from</span> playwright.sync_api <span class="text-purple-400">import</span> sync_playwright</p>
-              <p><span class="text-purple-400">from</span> src.agent.groq_client <span class="text-purple-400">import</span> GroqClient</p>
-              <p class="mt-2 text-slate-500"># Pragnya autonomous agent script</p>
-              <p><span class="text-purple-400">def</span> <span class="text-sky-300">summarize_top_stories</span>():</p>
-              <p class="ml-4"><span class="text-purple-400">with</span> sync_playwright() <span class="text-purple-400">as</span> p:</p>
-              <p class="ml-8">browser = p.chromium.launch(headless=<span class="text-amber-400">True</span>)</p>
-              <p class="ml-8">page = browser.new_page()</p>
-              <p class="ml-8">page.goto(<span class="text-emerald-300">"https://news.ycombinator.com"</span>)</p>
-              <p class="ml-8">titles = page.locator(<span class="text-emerald-300">".titleline &gt; a"</span>).all_inner_texts()[:3]</p>
-              <p class="ml-8"><span class="text-purple-400">return</span> GroqClient().chat_completion(messages=[{<span class="text-emerald-300">"role"</span>: <span class="text-emerald-300">"user"</span>, <span class="text-emerald-300">"content"</span>: str(titles)}])</p>
-            </div>
-
-            <!-- Bottom Integrated Terminal Dock -->
-            <div class="border-t border-white/[0.08] bg-dark-950 p-3 font-mono text-[11px]">
-              <div class="flex items-center justify-between text-slate-400 pb-1.5 mb-1.5 border-b border-white/[0.04]">
-                <div class="flex items-center gap-2">
-                  <i data-lucide="terminal" class="w-3.5 h-3.5 text-emerald-400"></i>
-                  <span class="text-slate-300 font-semibold">PowerShell (Interactive QProcess PTY)</span>
-                </div>
-                <span class="text-emerald-400 flex items-center gap-1">● Exit 0 (All passed)</span>
-              </div>
-              <p class="text-slate-400">PS F:\workspace\ai-desktop-agent&gt; <span class="text-white">uv run pytest tests/test_news.py</span></p>
-              <p class="text-emerald-400">collected 3 items -- 3 passed in 0.42s (100%)</p>
-              <p class="text-slate-500">All tests passed. Ready for deployment.</p>
-            </div>
-
-          </div>
-
-        </div>
-
       </div>
-
+      <div class="term">
+        <div class="term-h"><span class="ttl"><span class="lights" aria-hidden="true"><i></i><i></i><i></i></span><span id="tTitle">Simulation Output: Playwright Table Extractor</span></span><span class="st"><span class="dot"></span><span id="tStatus">Pipeline Finished (214 ms)</span></span></div>
+        <div class="logs" id="logs"></div>
+      </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- ==================== BENTO GRID: SUPERPOWERS ==================== -->
-  <section id="features" class="py-20 md:py-28 relative border-t border-white/[0.06]">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      
-      <!-- Section Title -->
-      <div class="max-w-2xl mx-auto text-center mb-16">
-        <h2 class="text-xs font-mono uppercase tracking-widest text-brand-400 mb-3">Enterprise Architectural Core</h2>
-        <p class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">Built for Builders Who Demand Complete Autonomy.</p>
-      </div>
-
-      <!-- Bento Grid (Irregular layout for bespoke feel) -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-        <!-- Card 1: Multi-Key Groq Failover (2 Cols) -->
-        <div id="failover" class="md:col-span-2 glass-card rounded-2xl p-7 relative overflow-hidden group">
-          <div class="flex items-start justify-between mb-6">
-            <div class="w-12 h-12 rounded-xl bg-brand-500/10 border border-brand-500/25 flex items-center justify-center text-brand-400">
-              <i data-lucide="layers" class="w-6 h-6"></i>
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="px-2.5 py-1 rounded-full text-xs font-mono font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/25">
-                Zero Downtime
-              </span>
-              <button onclick="simulateRateLimit()" class="px-3 py-1 rounded-full text-xs font-mono font-semibold bg-brand-500/20 hover:bg-brand-500/30 text-brand-300 border border-brand-500/40 transition-colors flex items-center gap-1.5">
-                <i data-lucide="play" class="w-3 h-3"></i> Test 429 Failover
-              </button>
-            </div>
-          </div>
-          
-          <h3 class="text-2xl font-bold text-white mb-2">Multi-Key Groq Auto-Failover Pool (Min 1, Max 5)</h3>
-          <p class="text-slate-300 text-sm leading-relaxed max-w-xl mb-6">
-            Never get blocked by Groq free-tier rate limits. Add 1 compulsory primary key and up to 4 optional backup keys. When any key hits an HTTP 429 or TPM ceiling, Pragnya instantly re-routes the request to your next available key with 0ms interruption.
-          </p>
-
-          <!-- Interactive Failover Diagram -->
-          <div class="bg-dark-900/90 rounded-xl p-4 border border-white/[0.08] font-mono text-xs">
-            <div class="flex items-center justify-between mb-3 text-slate-400">
-              <span>Active Key Rotation Pool</span>
-              <span id="failover-log" class="text-emerald-400 font-bold">● Status: Normal Operation</span>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div id="box-key1" class="p-3 rounded-lg bg-dark-950 border border-white/[0.1] transition-all flex flex-col justify-between">
-                <div class="flex items-center justify-between text-[11px] text-slate-400">
-                  <span>Key #1 (Primary)</span>
-                  <span id="tag-key1" class="text-emerald-400">Active</span>
-                </div>
-                <div class="text-slate-200 mt-2 font-semibold text-xs truncate">gsk_primary_key...</div>
-                <span id="sub-key1" class="text-[10px] text-slate-500 mt-1">Ready for requests</span>
-              </div>
-
-              <div id="box-key2" class="p-3 rounded-lg bg-dark-950 border border-white/[0.05] transition-all flex flex-col justify-between">
-                <div class="flex items-center justify-between text-[11px] text-slate-400">
-                  <span>Key #2 (Backup)</span>
-                  <span id="tag-key2" class="text-slate-500">Standby</span>
-                </div>
-                <div class="text-slate-400 mt-2 font-semibold text-xs truncate">gsk_backup_alpha...</div>
-                <span id="sub-key2" class="text-[10px] text-slate-500 mt-1">Queued in pool</span>
-              </div>
-
-              <div class="p-3 rounded-lg bg-dark-950 border border-white/[0.05] flex flex-col justify-between">
-                <div class="flex items-center justify-between text-[11px] text-slate-400">
-                  <span>Key #3 (Backup)</span>
-                  <span class="text-slate-500">Standby</span>
-                </div>
-                <div class="text-slate-400 mt-2 font-semibold text-xs truncate">gsk_backup_beta...</div>
-                <span class="text-[10px] text-slate-500 mt-1">Queued in pool</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Card 2: Multimodal Qwen Vision (1 Col) -->
-        <div class="glass-card rounded-2xl p-7 flex flex-col justify-between">
-          <div>
-            <div class="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/25 flex items-center justify-center text-purple-400 mb-6">
-              <i data-lucide="eye" class="w-6 h-6"></i>
-            </div>
-            <h3 class="text-xl font-bold text-white mb-2">Qwen Multimodal Vision</h3>
-            <p class="text-slate-300 text-sm leading-relaxed mb-4">
-              Real-time screen inspection and visual diagnosis. Pragnya takes smart downscaled screenshots, detects active UI windows, reads error popups, and self-corrects without manual user intervention.
-            </p>
-          </div>
-          <div class="bg-dark-900 rounded-xl p-3 border border-white/[0.06] font-mono text-xs text-slate-300 flex items-center gap-2">
-            <i data-lucide="scan" class="w-4 h-4 text-purple-400"></i>
-            <span>Model: qwen/qwen3.8-27b</span>
-          </div>
-        </div>
-
-        <!-- Card 3: Autonomous Browser Engine (1 Col) -->
-        <div class="glass-card rounded-2xl p-7 flex flex-col justify-between">
-          <div>
-            <div class="w-12 h-12 rounded-xl bg-sky-500/10 border border-sky-500/25 flex items-center justify-center text-sky-400 mb-6">
-              <i data-lucide="globe" class="w-6 h-6"></i>
-            </div>
-            <h3 class="text-xl font-bold text-white mb-2">Playwright Web Automation</h3>
-            <p class="text-slate-300 text-sm leading-relaxed mb-4">
-              Headful & headless browser orchestration. Navigate dynamic Single Page Applications, extract live financial feeds, scrape documentation, and fill complex forms autonomously.
-            </p>
-          </div>
-          <div class="bg-dark-900 rounded-xl p-3 border border-white/[0.06] font-mono text-xs text-sky-400 flex items-center gap-2">
-            <i data-lucide="check-circle" class="w-4 h-4"></i>
-            <span>Headful & Headless Execution</span>
-          </div>
-        </div>
-
-        <!-- Card 4: Hardware & Windows System Controls (2 Cols) -->
-        <div class="md:col-span-2 glass-card rounded-2xl p-7">
-          <div class="flex items-start justify-between mb-6">
-            <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center text-emerald-400">
-              <i data-lucide="sliders" class="w-6 h-6"></i>
-            </div>
-            <span class="text-xs font-mono text-slate-400">Native Windows API Integration</span>
-          </div>
-
-          <h3 class="text-2xl font-bold text-white mb-2">Direct OS & System Control</h3>
-          <p class="text-slate-300 text-sm leading-relaxed max-w-xl mb-6">
-            Control master volume via CoreAudio endpoints, adjust screen brightness with WMI, inspect high-CPU processes via psutil, or launch Windows applications with natural language commands.
-          </p>
-
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center font-mono text-xs">
-            <div class="p-3 bg-dark-900 rounded-xl border border-white/[0.06]">
-              <i data-lucide="volume-2" class="w-4 h-4 mx-auto mb-1 text-emerald-400"></i>
-              <span class="text-slate-300">Master Volume</span>
-            </div>
-            <div class="p-3 bg-dark-900 rounded-xl border border-white/[0.06]">
-              <i data-lucide="sun" class="w-4 h-4 mx-auto mb-1 text-amber-400"></i>
-              <span class="text-slate-300">Display Brightness</span>
-            </div>
-            <div class="p-3 bg-dark-900 rounded-xl border border-white/[0.06]">
-              <i data-lucide="activity" class="w-4 h-4 mx-auto mb-1 text-purple-400"></i>
-              <span class="text-slate-300">Process Inspector</span>
-            </div>
-            <div class="p-3 bg-dark-900 rounded-xl border border-white/[0.06]">
-              <i data-lucide="power" class="w-4 h-4 mx-auto mb-1 text-rose-400"></i>
-              <span class="text-slate-300">Power Actions</span>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
+<!-- ============ CLI ============ -->
+<section id="cli">
+  <div class="wrap">
+    <div class="sec-head" data-reveal>
+      <div class="eyebrow">Developer First</div>
+      <h2>Pragnya <span class="grad-text">Natural Language CLI</span></h2>
+      <p>Control everything from your favorite terminal using plain English or natural commands.</p>
     </div>
-  </section>
-
-  <!-- ==================== DEEP DIVE: PRAGNYA CODE IDE ==================== -->
-  <section id="ide" class="py-20 md:py-28 relative bg-dark-900/40 border-t border-white/[0.06]">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-        
-        <!-- Left: Feature Details (5 Cols) -->
-        <div class="lg:col-span-5">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/20 text-xs font-mono text-brand-400 mb-4">
-            <i data-lucide="code" class="w-3.5 h-3.5"></i> Built-in Developer Environment
-          </div>
-          <h2 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-4 leading-tight">
-            Meet Pragnya Code. <br>
-            <span class="text-slate-400">An IDE with Autonomous Brains.</span>
-          </h2>
-          <p class="text-slate-300 text-sm leading-relaxed mb-6">
-            You don't need to juggle between VS Code, Chrome, and separate AI chat windows. Pragnya Code is a full developer IDE built directly into the agent.
-          </p>
-
-          <div class="space-y-4 text-sm">
-            <div class="flex items-start gap-3">
-              <div class="w-6 h-6 rounded-lg bg-brand-500/10 border border-brand-500/20 flex items-center justify-center text-brand-400 shrink-0 mt-0.5">
-                <i data-lucide="terminal" class="w-3.5 h-3.5"></i>
-              </div>
-              <div>
-                <h4 class="font-bold text-white">Interactive PowerShell Terminal</h4>
-                <p class="text-slate-400 text-xs mt-0.5">Execute commands, run test suites, install packages, and inspect live color-coded output with custom height controls.</p>
-              </div>
-            </div>
-
-            <div class="flex items-start gap-3">
-              <div class="w-6 h-6 rounded-lg bg-brand-500/10 border border-brand-500/20 flex items-center justify-center text-brand-400 shrink-0 mt-0.5">
-                <i data-lucide="wrench" class="w-3.5 h-3.5"></i>
-              </div>
-              <div>
-                <h4 class="font-bold text-white">1-Click Terminal Error Fixer</h4>
-                <p class="text-slate-400 text-xs mt-0.5">When a script crashes, click "Fix with AI". Pragnya extracts the stack trace, diagnoses the root cause, and edits the code for you.</p>
-              </div>
-            </div>
-
-            <div class="flex items-start gap-3">
-              <div class="w-6 h-6 rounded-lg bg-brand-500/10 border border-brand-500/20 flex items-center justify-center text-brand-400 shrink-0 mt-0.5">
-                <i data-lucide="search" class="w-3.5 h-3.5"></i>
-              </div>
-              <div>
-                <h4 class="font-bold text-white">Quick Open (<kbd class="px-1.5 py-0.5 rounded bg-dark-800 border border-white/[0.1] text-[10px] font-mono">Ctrl+P</kbd>)</h4>
-                <p class="text-slate-400 text-xs mt-0.5">Instant fuzzy search across your entire project file tree to jump to any file in milliseconds.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Right: Interactive Visual Card (7 Cols) -->
-        <div class="lg:col-span-7">
-          <div class="glass-card rounded-2xl border border-white/[0.1] p-6 shadow-card-dark font-mono text-xs">
-            <div class="flex items-center justify-between pb-3 mb-4 border-b border-white/[0.08]">
-              <div class="flex items-center gap-2">
-                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
-                <span class="text-slate-300 font-bold">Pragnya Copilot Dock — Live AI Diagnosis</span>
-              </div>
-              <span class="text-slate-500">model: qwen-2.5-coder-32b</span>
-            </div>
-
-            <div class="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/25 text-rose-300 mb-3 text-[11px]">
-              <span class="font-bold">Captured Terminal Crash:</span><br>
-              ZeroDivisionError: division by zero in src/calculator.py line 42
-            </div>
-
-            <div class="p-3.5 rounded-xl bg-dark-900 border border-white/[0.08] text-slate-300 mb-4 text-[11px] leading-relaxed">
-              <span class="text-brand-400 font-bold">🤖 Pragnya AI Suggestion:</span><br>
-              Input array was empty before calculating mean. Added defensive guard clause and fallback default to prevent ZeroDivisionError.
-            </div>
-
-            <!-- Side-by-side Diff Preview -->
-            <div class="p-3 rounded-lg bg-dark-950 border border-white/[0.08] text-[11px] space-y-1">
-              <div class="text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded">- avg = sum(items) / len(items)</div>
-              <div class="text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">+ avg = sum(items) / len(items) if items else 0.0</div>
-            </div>
-
-            <div class="mt-4 flex items-center justify-end gap-2">
-              <button onclick="showToast('Applied in-place patch successfully!')" class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs flex items-center gap-1.5 transition-colors">
-                <i data-lucide="check" class="w-3.5 h-3.5"></i>
-                <span>Apply Patch (In-Place)</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
+    <div class="cli-grid">
+      <div class="cmds" role="tablist" aria-label="CLI examples" aria-orientation="vertical" data-reveal>
+        <button class="cmd" role="tab" id="cmd-0" aria-selected="true" aria-controls="cliTerm"><small># Instant Natural Language Task</small><span>pragnya "Find and kill process using port 8000" -y</span></button>
+        <button class="cmd" role="tab" id="cmd-1" aria-selected="false" aria-controls="cliTerm" tabindex="-1"><small># Automated Web Scraping &amp; PDF Export</small><span>pragnya browser https://news.ycombinator.com --table</span></button>
+        <button class="cmd" role="tab" id="cmd-2" aria-selected="false" aria-controls="cliTerm" tabindex="-1"><small># Trigger Watchdog File Organization</small><span>pragnya watchdog --scan</span></button>
+        <button class="cmd" role="tab" id="cmd-3" aria-selected="false" aria-controls="cliTerm" tabindex="-1"><small># Environment &amp; Health Diagnostics</small><span>pragnya doctor</span></button>
       </div>
-
+      <div class="cli-term" id="cliTerm" role="tabpanel" data-reveal>
+        <div class="cli-bar"><span class="lights" aria-hidden="true"><i></i><i></i><i></i></span><span>Windows Terminal / PowerShell</span></div>
+        <div class="cli-out" id="cliOut"></div>
+        <div class="cli-foot"><button class="btn btn-sm mono-btn" id="cliCopy"><i data-lucide="copy" class="i"></i>Copy command</button></div>
+      </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- ==================== INTERACTIVE PLAYGROUND SIMULATOR ==================== -->
-  <section id="demo" class="py-20 md:py-28 relative border-t border-white/[0.06]">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      
-      <h2 class="text-xs font-mono uppercase tracking-widest text-brand-400 mb-3">Live Interactive Terminal Widget</h2>
-      <p class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-4">See Pragnya in Action.</p>
-      <p class="text-slate-400 text-sm max-w-xl mx-auto mb-10">Select an autonomous scenario below to see how Pragnya orchestrates tools and handles rate limits in real time.</p>
-
-      <!-- Scenario Tabs -->
-      <div class="flex flex-wrap items-center justify-center gap-2 mb-8" id="scenario-tabs">
-        <button onclick="setScenario('sc1')" id="btn-sc1" class="scenario-btn active px-4 py-2 rounded-xl text-xs font-mono font-medium border bg-brand-500/20 border-brand-500 text-white transition-all">
-          1. Clean Downloads & Organize
-        </button>
-        <button onclick="setScenario('sc2')" id="btn-sc2" class="scenario-btn px-4 py-2 rounded-xl text-xs font-mono font-medium border bg-white/[0.03] border-white/[0.08] text-slate-400 hover:text-white transition-all">
-          2. Auto-Fix Terminal Crash
-        </button>
-        <button onclick="setScenario('sc3')" id="btn-sc3" class="scenario-btn px-4 py-2 rounded-xl text-xs font-mono font-medium border bg-white/[0.03] border-white/[0.08] text-slate-400 hover:text-white transition-all">
-          3. Multi-Key 429 Failover
-        </button>
-      </div>
-
-      <!-- Simulated Terminal Box -->
-      <div class="glass-card rounded-2xl border border-white/[0.1] text-left overflow-hidden shadow-card-dark font-mono text-xs">
-        <div class="bg-dark-900 px-4 py-2.5 border-b border-white/[0.08] flex items-center justify-between text-slate-400">
-          <div class="flex items-center gap-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-slate-600"></span>
-            <span class="w-2.5 h-2.5 rounded-full bg-slate-600"></span>
-            <span class="w-2.5 h-2.5 rounded-full bg-slate-600"></span>
-            <span class="text-slate-300 ml-2" id="sim-title">scenario: organize_downloads.pragnya</span>
-          </div>
-          <span class="text-brand-400 font-semibold" id="sim-status">Completed in 840ms</span>
-        </div>
-
-        <div class="p-6 bg-dark-950/90 min-h-[260px] space-y-3 leading-relaxed" id="sim-content">
-          <!-- Dynamic JS fills this -->
-        </div>
-      </div>
-
+<!-- ============ SECURITY ============ -->
+<section id="security">
+  <div class="wrap">
+    <div class="sec-head" data-reveal>
+      <div class="shield" aria-hidden="true"><div class="shield-core"><i data-lucide="shield-check" class="i"></i></div></div>
+      <div class="pill" style="color:var(--green);border-color:rgba(47,227,161,.35)"><i data-lucide="shield-check" class="i"></i>ENTERPRISE PRIVACY &amp; SAFETY</div>
+      <h2>Safe by Design. <span class="grad-text" style="background-image:linear-gradient(110deg,#2fe3a1,#0FC1E7)">Zero Cloud Leakage.</span></h2>
+      <p>Pragnya is engineered from the ground up for strict Windows security. You own your data, your files remain on your disk, and dangerous actions are never executed without your explicit permission.</p>
     </div>
-  </section>
-
-  <!-- ==================== DOWNLOAD & RELEASE CENTER (v1.1.0) ==================== -->
-  <section id="downloads" class="py-20 md:py-28 relative bg-dark-900/30 border-t border-white/[0.06]">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-      
-      <div class="text-center mb-14">
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/20 text-xs font-mono text-brand-400 mb-3">
-          <i data-lucide="package" class="w-3.5 h-3.5"></i> Release Distribution Center
-        </div>
-        <h2 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">Download Pragnya for Windows</h2>
-        <p class="text-slate-400 text-sm max-w-lg mx-auto mt-2">Choose between the standalone portable executable or the full release ZIP archive.</p>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-        
-        <!-- Release Option 1: Standalone .EXE -->
-        <div class="glass-card rounded-2xl p-7 flex flex-col justify-between border-brand-500/30 shadow-glow-amber">
-          <div>
-            <div class="flex items-center justify-between mb-4">
-              <span class="px-2.5 py-1 rounded-md text-[11px] font-mono font-bold bg-brand-500/20 text-brand-300 border border-brand-500/30">
-                RECOMMENDED
-              </span>
-              <span class="text-xs font-mono text-slate-400">~110 MB</span>
-            </div>
-            <h3 class="text-2xl font-bold text-white mb-2">Pragnya.exe (Standalone)</h3>
-            <p class="text-slate-300 text-sm leading-relaxed mb-6">
-              Zero dependencies required. Includes PySide6 runtime, Python 3.12 embedded interpreter, and pre-packaged assets. Double-click and run immediately.
-            </p>
-          </div>
-
-          <div>
-            <a href="https://github.com/adityasysnet/ai-desktop-agent-exe/releases/download/v1.1.0/Pragnya.exe" class="w-full flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl font-bold text-white bg-gradient-to-r from-brand-600 to-amber-600 hover:from-brand-500 hover:to-amber-500 shadow-lg shadow-brand-500/25 transition-all text-sm mb-3">
-              <i data-lucide="download" class="w-4 h-4"></i>
-              <span>Download Pragnya.exe</span>
-            </a>
-            <span class="text-[11px] text-slate-500 font-mono text-center block">Direct from GitHub Releases tag v1.1.0</span>
-          </div>
-        </div>
-
-        <!-- Release Option 2: Full ZIP Package -->
-        <div class="glass-card rounded-2xl p-7 flex flex-col justify-between">
-          <div>
-            <div class="flex items-center justify-between mb-4">
-              <span class="px-2.5 py-1 rounded-md text-[11px] font-mono font-bold bg-white/[0.05] text-slate-300 border border-white/[0.1]">
-                PORTABLE ZIP
-              </span>
-              <span class="text-xs font-mono text-slate-400">~109 MB</span>
-            </div>
-            <h3 class="text-2xl font-bold text-white mb-2">Pragnya-v1.1.0-windows-x64.zip</h3>
-            <p class="text-slate-300 text-sm leading-relaxed mb-6">
-              Full compressed distribution archive containing the binary executable, release metadata, and example configuration files.
-            </p>
-          </div>
-
-          <div>
-            <a href="https://github.com/adityasysnet/ai-desktop-agent-exe/releases/download/v1.1.0/Pragnya-v1.1.0-windows-x64.zip" class="w-full flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl font-bold text-slate-200 bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.1] hover:border-slate-400 transition-all text-sm mb-3">
-              <i data-lucide="archive" class="w-4 h-4"></i>
-              <span>Download Release ZIP</span>
-            </a>
-            <a href="https://github.com/adityasysnet/ai-desktop-agent-exe/releases/tag/v1.1.0" target="_blank" class="text-[11px] text-brand-400 hover:underline font-mono text-center block">
-              View GitHub Release Notes v1.1.0 &rarr;
-            </a>
-          </div>
-        </div>
-
-      </div>
-
+    <div class="pillars">
+      <article class="card pillar" data-tilt="5" data-reveal>
+        <div class="ico"><i data-lucide="lock" class="i"></i></div>
+        <h3>1. Human-in-the-Loop Sandbox</h3>
+        <p>All system mutations (deleting files, terminating processes, modifying critical directories) trigger an interactive PySide6 approval dialog.</p>
+        <ul class="ticks"><li><i data-lucide="check-circle" class="i"></i>Path traversal &amp; symlink escape prevention</li><li><i data-lucide="check-circle" class="i"></i>Dangerous command blacklists (<code>format</code>, <code>rmdir /s</code>)</li><li><i data-lucide="check-circle" class="i"></i>Explicit user override modal with diff preview</li></ul>
+      </article>
+      <article class="card pillar" data-tilt="5" data-reveal>
+        <div class="ico"><i data-lucide="key" class="i"></i></div>
+        <h3>2. Multi-Key Failover Pool</h3>
+        <p>Never get stopped by Groq free-tier rate limits (HTTP 429). Store 1 to 5 API keys with instant round-robin failover and automatic retry.</p>
+        <ul class="ticks"><li><i data-lucide="check-circle" class="i"></i>Automatic key health monitoring</li><li><i data-lucide="check-circle" class="i"></i>Seamless in-flight request retry on 429</li><li><i data-lucide="check-circle" class="i"></i>Keys stored locally in OS user profile</li></ul>
+      </article>
+      <article class="card pillar" data-tilt="5" data-reveal>
+        <div class="ico"><i data-lucide="hard-drive" class="i"></i></div>
+        <h3>3. Local-First SQLite Storage</h3>
+        <p>Chat histories, DocuBrain document indexes, Watchdog rules, and invoice ledgers live inside local SQLite databases (<code>agent.db</code>).</p>
+        <ul class="ticks"><li><i data-lucide="check-circle" class="i"></i>SQLite FTS5 full-text BM25 index</li><li><i data-lucide="check-circle" class="i"></i>Zero third-party cloud vector sync</li><li><i data-lucide="check-circle" class="i"></i>1-Click complete data export or wipe</li></ul>
+      </article>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- ==================== FREQUENTLY ASKED QUESTIONS ==================== -->
-  <section id="faq" class="py-20 md:py-28 relative border-t border-white/[0.06]">
-    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-      
-      <div class="text-center mb-16">
-        <h2 class="text-xs font-mono uppercase tracking-widest text-brand-400 mb-3">Got Questions?</h2>
-        <p class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">Frequently Asked Questions.</p>
-      </div>
-
-      <div class="space-y-4 font-sans text-sm" id="faq-accordion">
-        
-        <!-- FAQ 1 -->
-        <div class="glass-card rounded-xl p-5 border border-white/[0.08] cursor-pointer" onclick="toggleFaq(this)">
-          <div class="flex items-center justify-between font-bold text-white text-base">
-            <span>Do I need a paid Groq subscription to use Pragnya?</span>
-            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 transition-transform"></i>
-          </div>
-          <p class="mt-3 text-slate-300 text-xs sm:text-sm leading-relaxed hidden">
-            No! You can use completely free Groq API keys. Because Groq provides generous free-tier limits, you can add 2 to 5 free keys into Pragnya's Multi-Key Pool, enabling uninterrupted high-speed development without paying a single dollar.
-          </p>
-        </div>
-
-        <!-- FAQ 2 -->
-        <div class="glass-card rounded-xl p-5 border border-white/[0.08] cursor-pointer" onclick="toggleFaq(this)">
-          <div class="flex items-center justify-between font-bold text-white text-base">
-            <span>How does the Multi-Key Auto-Failover feature work?</span>
-            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 transition-transform"></i>
-          </div>
-          <p class="mt-3 text-slate-300 text-xs sm:text-sm leading-relaxed hidden">
-            Pragnya maintains an internal active index of all your configured Groq API keys (1 compulsory, up to 4 backup). If your active key returns an HTTP 429 rate limit or token-per-minute ceiling, Pragnya intercepts the error and immediately retries the exact same request on the next available key without interrupting you.
-          </p>
-        </div>
-
-        <!-- FAQ 3 -->
-        <div class="glass-card rounded-xl p-5 border border-white/[0.08] cursor-pointer" onclick="toggleFaq(this)">
-          <div class="flex items-center justify-between font-bold text-white text-base">
-            <span>Is my local desktop and code safe?</span>
-            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 transition-transform"></i>
-          </div>
-          <p class="mt-3 text-slate-300 text-xs sm:text-sm leading-relaxed hidden">
-            Yes. Pragnya enforces a strict Path Policy Sandbox. It only operates inside authorized working directories configured by you in Settings. Any destructive action (like file deletion or overwriting) is automatically recorded in a local SQLite audit database with rollback capability.
-          </p>
-        </div>
-
-        <!-- FAQ 4 -->
-        <div class="glass-card rounded-xl p-5 border border-white/[0.08] cursor-pointer" onclick="toggleFaq(this)">
-          <div class="flex items-center justify-between font-bold text-white text-base">
-            <span>How do future updates work on other users' PCs?</span>
-            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 transition-transform"></i>
-          </div>
-          <p class="mt-3 text-slate-300 text-xs sm:text-sm leading-relaxed hidden">
-            Pragnya has a built-in GitHub Releases Auto-Updater. Simply click "🔄 Check for Updates" in Settings, and Pragnya will automatically query the repository, check if a newer release exists, download the binary, and upgrade in place.
-          </p>
-        </div>
-
-      </div>
-
+<!-- ============ COMPARE ============ -->
+<section id="compare">
+  <div class="wrap">
+    <div class="sec-head" data-reveal>
+      <div class="eyebrow">Feature Comparison</div>
+      <h2>Why Pragnya? <span class="grad-text">Built Different.</span></h2>
+      <p>See how Pragnya compares against generic browser chatbots and heavy cloud-only developer tools.</p>
     </div>
-  </section>
-
-  <!-- ==================== FINAL CALL TO ACTION ==================== -->
-  <section class="py-20 md:py-28 relative border-t border-white/[0.06] bg-grid-pattern overflow-hidden">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-      
-      <div class="glass-card rounded-3xl p-8 sm:p-14 border border-brand-500/30 relative overflow-hidden shadow-glow-amber">
-        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-500 to-amber-600 flex items-center justify-center text-white mx-auto mb-6 shadow-lg shadow-brand-500/30">
-          <i data-lucide="sparkles" class="w-8 h-8"></i>
-        </div>
-
-        <h2 class="text-3xl sm:text-5xl font-black text-white tracking-tight mb-4">
-          Ready to Automate Your Desktop?
-        </h2>
-        <p class="text-slate-300 text-base max-w-xl mx-auto mb-8 font-normal">
-          Download the standalone Windows executable now from GitHub Releases or run from source with uv. Setup takes under 2 minutes.
-        </p>
-
-        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <a href="https://github.com/adityasysnet/ai-desktop-agent-exe/releases/tag/v1.1.0" target="_blank" rel="noreferrer" class="w-full sm:w-auto flex items-center justify-center gap-3 px-8 py-4 rounded-xl font-bold text-white bg-gradient-to-r from-brand-600 to-amber-600 hover:from-brand-500 hover:to-amber-500 shadow-xl shadow-brand-500/30 hover:scale-[1.02] transition-all text-base">
-            <i data-lucide="download" class="w-5 h-5"></i>
-            <span>Download Pragnya.exe (v1.1.0)</span>
-          </a>
-
-          <a href="https://github.com/adityasysnet/ai-desktop-agent" target="_blank" rel="noreferrer" class="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-semibold text-slate-300 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.1] transition-all text-base">
-            <i data-lucide="github" class="w-5 h-5"></i>
-            <span>GitHub Repository</span>
-          </a>
-        </div>
-
-        <p class="mt-6 text-xs text-slate-500 font-mono">Compatible with Windows 10 & Windows 11 (64-bit)</p>
+    <div class="table-card" data-reveal>
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Feature comparison table">
+        <table>
+          <thead><tr><th scope="col">Capability / Architecture</th><th scope="col" class="hl">Pragnya v1.3.0</th><th scope="col">Web Chatbots (ChatGPT/Claude)</th><th scope="col">Cloud AI Agents</th></tr></thead>
+          <tbody>
+            <tr><th scope="row"><span><i data-lucide="terminal" class="i"></i>Direct Local Filesystem &amp; Terminal Execution</span></th><td class="hl">✔ Native Windows QProcess</td><td>❌ Sandbox Cloud Only</td><td class="warn">⚠ Remote VM Container</td></tr>
+            <tr><th scope="row"><span><i data-lucide="globe" class="i"></i>Playwright Headless Browser Automation</span></th><td class="hl">✔ Built-in Scraper &amp; PDF Robot</td><td>❌ Text browsing only</td><td class="warn">⚠ Expensive Cloud Browser</td></tr>
+            <tr><th scope="row"><span><i data-lucide="key" class="i"></i>Multi-Key Groq LPU Failover (No 429 Throttle)</span></th><td class="hl">✔ 1–5 Keys Auto Pool</td><td>❌ Hard Usage Caps / Throttled</td><td>❌ Single Token Limit</td></tr>
+            <tr><th scope="row"><span><i data-lucide="folder-search" class="i"></i>Background Watchdog &amp; Invoice Ledger</span></th><td class="hl">✔ Auto-sort &amp; CSV parser</td><td>❌ No Background Daemons</td><td>❌ No Local Watcher</td></tr>
+            <tr><th scope="row"><span><i data-lucide="book-open" class="i"></i>Local Document Intelligence (DocuBrain RAG)</span></th><td class="hl">✔ SQLite FTS5 (100% Offline)</td><td class="warn">⚠ Requires Cloud Upload</td><td class="warn">⚠ Paid Cloud Vector DB</td></tr>
+            <tr><th scope="row"><span><i data-lucide="code" class="i"></i>Integrated Multi-Tab Code IDE</span></th><td class="hl">✔ Syntax Highlight + Runner</td><td>❌ Static Markdown Blocks</td><td class="warn">⚠ Heavy External IDE Plugins</td></tr>
+            <tr><th scope="row"><span><i data-lucide="dollar-sign" class="i"></i>Pricing Model &amp; Open Source</span></th><td class="hl">✔ 100% Free &amp; Open Source</td><td>$20 / month recurring</td><td>$20 - $200 / month usage</td></tr>
+          </tbody>
+        </table>
       </div>
-
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- ==================== FOOTER ==================== -->
-  <footer class="py-12 border-t border-white/[0.06] bg-dark-950 font-sans text-xs text-slate-400">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-6">
-      
-      <div class="flex items-center gap-3">
-        <div class="w-6 h-6 rounded-lg bg-brand-500 flex items-center justify-center text-white">
-          <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
-        </div>
-        <span class="font-bold text-white">Pragnya Desktop Agent</span>
-        <span class="text-slate-600">|</span>
-        <span>Open Source Apache 2.0 / MIT</span>
-      </div>
-
-      <div class="flex items-center gap-6">
-        <a href="https://github.com/adityasysnet/ai-desktop-agent" target="_blank" class="hover:text-white transition-colors">GitHub Core</a>
-        <a href="https://github.com/adityasysnet/ai-desktop-agent-exe/releases/tag/v1.1.0" target="_blank" class="hover:text-white transition-colors">Release v1.1.0</a>
-        <a href="#features" class="hover:text-white transition-colors">Features</a>
-        <a href="#faq" class="hover:text-white transition-colors">FAQ</a>
-      </div>
-
-      <div class="text-slate-500 font-mono text-[11px]">
-        Built with PySide6, Groq LPUs & Playwright
-      </div>
-
+<!-- ============ FAQ ============ -->
+<section id="faq">
+  <div class="wrap">
+    <div class="sec-head" data-reveal>
+      <div class="eyebrow">Clear Answers</div>
+      <h2>Frequently Asked <span class="grad-text">Questions</span></h2>
+      <p>Everything you need to know about getting started and running Pragnya on Windows.</p>
     </div>
-  </footer>
+    <div class="faq" id="faqList">
+      <div class="qa" data-reveal><button id="q1" aria-expanded="false" aria-controls="a1"><span>How does the Multi-Key Groq Rate-Limit Failover work?</span><span class="chev"><i data-lucide="chevron-down" class="i"></i></span></button><div class="qa-body" id="a1" role="region" aria-labelledby="q1"><div><p>In Pragnya Settings (or during onboarding), you can paste up to 5 Groq API keys. The inference orchestrator dynamically routes requests across healthy keys. If any key hits a 429 rate limit, Pragnya automatically falls over to the next healthy key in milliseconds with zero dropped requests.</p></div></div></div>
+      <div class="qa" data-reveal><button id="q2" aria-expanded="false" aria-controls="a2"><span>Do I need Python installed to run Pragnya on Windows?</span><span class="chev"><i data-lucide="chevron-down" class="i"></i></span></button><div class="qa-body" id="a2" role="region" aria-labelledby="q2"><div><p>No! You can download the pre-compiled standalone executable (<code>Pragnya.exe</code>) from our releases page. It is bundled with all GUI libraries, tools, and runtimes. Developers who wish to modify the code can run directly from source with <code>uv run python main.py</code>.</p></div></div></div>
+      <div class="qa" data-reveal><button id="q3" aria-expanded="false" aria-controls="a3"><span>Is my personal data or internal code uploaded to external servers?</span><span class="chev"><i data-lucide="chevron-down" class="i"></i></span></button><div class="qa-body" id="a3" role="region" aria-labelledby="q3"><div><p>Never. Pragnya operates locally on your machine. Chat transcripts, DocuBrain document indexes, and Watchdog ledgers are saved in local SQLite databases (<code>agent.db</code>) on your own hard drive. Only LLM prompts sent to Groq leave your computer, using your own private API key.</p></div></div></div>
+      <div class="qa" data-reveal><button id="q4" aria-expanded="false" aria-controls="a4"><span>How does the Playwright Web Automator work?</span><span class="chev"><i data-lucide="chevron-down" class="i"></i></span></button><div class="qa-body" id="a4" role="region" aria-labelledby="q4"><div><p>Pragnya integrates an autonomous Playwright Chromium runner under Mode 5 (🌐 Web). It can parse HTML tables directly into clean CSV files, capture full-page high-resolution screenshots, export print-fidelity PDFs, and navigate dynamic web forms using reliable selector fallbacks.</p></div></div></div>
+      <div class="qa" data-reveal><button id="q5" aria-expanded="false" aria-controls="a5"><span>What is Smart Watchdog and the Invoice Ledger?</span><span class="chev"><i data-lucide="chevron-down" class="i"></i></span></button><div class="qa-body" id="a5" role="region" aria-labelledby="q5"><div><p>Watchdog is a background filesystem automation engine. It monitors directories like Downloads or Desktop for new files, sorts them into organized folders by rule, and automatically parses invoice PDFs to extract totals, dates, and vendor names directly into an expense ledger CSV.</p></div></div></div>
+    </div>
+  </div>
+</section>
 
-  <!-- ==================== CLIENT INTERACTIVITY SCRIPT ==================== -->
-  <script>
-    // Initialize Lucide icons
-    lucide.createIcons();
+<!-- ============ DOWNLOADS ============ -->
+<section id="downloads">
+  <div class="wrap">
+    <div class="sec-head" data-reveal>
+      <div class="eyebrow">Install &amp; Run</div>
+      <h2>Get <span class="grad-text">Pragnya v1.3.0</span></h2>
+      <p>Standalone zero-dependency Windows executable, or run from source with uv.</p>
+    </div>
+    <div class="dl">
+      <article class="card dl-card main" data-tilt="4" data-reveal>
+        <div>
+          <div class="dl-meta"><span class="lab">Recommended</span><span>Windows 10 / 11 (64-bit)</span></div>
+          <h3>Standalone Executable</h3>
+          <p>Zero Python installation required. Packaged standalone executable bundled with all 6 operational suites and tools.</p>
+        </div>
+        <a class="btn btn-primary btn-lg magnetic" href="https://github.com/adityasysnet/ai-desktop-agent-exe/releases/download/v1.3.0/Pragnya.exe" target="_blank" rel="noreferrer noopener"><i data-lucide="download" class="i"></i>Download Pragnya.exe (v1.3.0)</a>
+      </article>
+      <article class="card dl-card" data-tilt="4" data-reveal>
+        <div>
+          <div class="dl-meta"><span class="lab dev">Developer</span><span>Python 3.12+</span></div>
+          <h3>Run from Source</h3>
+          <p>Clone the repository, customize workflows, add custom tools, or train subagents using the official uv environment.</p>
+        </div>
+        <div>
+          <button class="copy" data-copy="git clone https://github.com/adityasysnet/ai-desktop-agent.git" aria-label="Copy git clone command"><span>git clone https://github.com/adityasysnet/ai-desktop-agent.git</span><i data-lucide="copy" class="i"></i></button>
+          <button class="copy" data-copy="uv run python main.py" aria-label="Copy run command" style="color:var(--cyan)"><span>uv run python main.py</span><i data-lucide="copy" class="i"></i></button>
+        </div>
+      </article>
+    </div>
 
-    // Mobile Menu Toggle
-    function toggleMobileMenu() {
-      const menu = document.getElementById('mobile-menu');
-      menu.classList.toggle('hidden');
+    <div class="final" data-reveal>
+      <h2>Ready to give your desktop <span class="grad-text">a brain?</span></h2>
+      <p>Free, open source, and local-first. Download Pragnya and automate your first task in minutes.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:14px;justify-content:center">
+        <a class="btn btn-primary btn-lg magnetic" href="https://github.com/adityasysnet/ai-desktop-agent-exe/releases/download/v1.3.0/Pragnya.exe" target="_blank" rel="noreferrer noopener"><i data-lucide="download" class="i"></i>Download for Windows</a>
+        <a class="btn btn-lg magnetic" href="https://github.com/adityasysnet/ai-desktop-agent-exe" target="_blank" rel="noreferrer noopener"><i data-lucide="github" class="i"></i>Star on GitHub</a>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <div class="foot-l"><span class="brand-mark"><i data-lucide="sparkles" class="i"></i></span><span>Pragnya Desktop Agent</span><span style="color:#34415f">|</span><span style="font-weight:400">Version 1.3.0</span></div>
+    <nav class="foot-links" aria-label="Footer">
+      <a href="https://github.com/adityasysnet/ai-desktop-agent-exe" target="_blank" rel="noreferrer noopener">GitHub</a>
+      <a href="https://github.com/adityasysnet/ai-desktop-agent-exe/releases/download/v1.3.0/Pragnya.exe" target="_blank" rel="noreferrer noopener">Download v1.3.0</a>
+      <a href="#suites">Suites</a><a href="#engine">Engine</a><a href="#cli">CLI</a><a href="#security">Security</a><a href="#compare">Compare</a><a href="#faq">FAQ</a>
+    </nav>
+    <div class="built">Built with PySide6, Groq LPUs, Playwright &amp; LangGraph</div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js" defer></script>
+
+<script>
+let booted = false;
+if (document.readyState === 'complete') init(); else window.addEventListener('load', init);
+
+function init() {
+  if (booted) return; booted = true;
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const coarse = matchMedia('(pointer: coarse)').matches;
+  const sleep = ms => new Promise(r => setTimeout(r, reduce ? 0 : ms));
+  const icons = () => { try { window.lucide && lucide.createIcons(); } catch (e) {} };
+  icons();
+
+  /* ---------- Marquee ---------- */
+  const caps = [['message-square','Pragnya Chat'],['code','Code IDE'],['workflow','Pragnya Flow'],['book-open','DocuBrain RAG'],['folder-search','Smart Watchdog'],['globe','Playwright Automator'],['key','Groq Multi-Key Failover'],['shield-check','Safe Path Sandbox'],['database','SQLite FTS5'],['terminal','Natural Language CLI']];
+  const mq = $('#marquee');
+  mq.innerHTML = [...caps, ...caps].map(c => `<span><i data-lucide="${c[0]}" class="i"></i>${c[1]}</span>`).join('');
+  icons();
+
+  /* ---------- Nav ---------- */
+  const nav = $('#nav'), prog = $('#progress'), toTop = $('#toTop'), canvas = $('#bg3d');
+  let scrollY = 0;
+  function onScroll() {
+    scrollY = window.scrollY;
+    nav.classList.toggle('scrolled', scrollY > 10);
+    const max = document.documentElement.scrollHeight - innerHeight;
+    prog.style.transform = `scaleX(${max > 0 ? scrollY / max : 0})`;
+    toTop.classList.toggle('show', scrollY > 900);
+    const p = Math.min(scrollY / innerHeight, 1.6);
+    canvas.style.opacity = innerWidth < 768 ? Math.max(.18, .6 - p * .3) : Math.max(.3, 1 - p * .55);
+  }
+  addEventListener('scroll', onScroll, { passive: true }); onScroll();
+  toTop.addEventListener('click', () => scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' }));
+
+  const menuBtn = $('#menuBtn'), mobile = $('#mobile');
+  function setMenu(open) {
+    mobile.classList.toggle('open', open);
+    menuBtn.setAttribute('aria-expanded', open);
+    menuBtn.innerHTML = `<i data-lucide="${open ? 'x' : 'menu'}" class="i" style="font-size:1.2rem"></i>`;
+    document.body.style.overflow = open ? 'hidden' : '';
+    icons();
+  }
+  menuBtn.addEventListener('click', () => setMenu(!mobile.classList.contains('open')));
+  $$('#mobile a').forEach(a => a.addEventListener('click', () => setMenu(false)));
+  addEventListener('keydown', e => { if (e.key === 'Escape') setMenu(false); });
+  addEventListener('resize', () => { if (innerWidth >= 960) setMenu(false); });
+
+  const navLinks = $$('.links a');
+  const secObs = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id));
+  }), { rootMargin: '-45% 0px -50% 0px' });
+  ['suites','engine','cli','security','compare','faq','downloads'].forEach(id => { const s = document.getElementById(id); s && secObs.observe(s); });
+
+  /* ---------- Toast + copy ---------- */
+  const toast = $('#toast'); let toastT;
+  function showToast(m) {
+    $('#toastMsg').textContent = m; toast.classList.add('show');
+    clearTimeout(toastT); toastT = setTimeout(() => toast.classList.remove('show'), 2400);
+  }
+  async function copyText(t) {
+    try { await navigator.clipboard.writeText(t); showToast('Copied: ' + t); }
+    catch (e) {
+      const ta = document.createElement('textarea'); ta.value = t; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); showToast('Copied: ' + t); } catch (_) { showToast('Press Ctrl+C to copy'); }
+      ta.remove();
     }
+  }
+  $$('[data-copy]').forEach(b => b.addEventListener('click', () => copyText(b.dataset.copy)));
 
-    // Toast Notification helper
-    function showToast(msg) {
-      const toast = document.getElementById('toast');
-      const toastMsg = document.getElementById('toast-msg');
-      toastMsg.innerText = msg;
-      toast.classList.remove('translate-y-20', 'opacity-0');
-      toast.classList.add('translate-y-0', 'opacity-100');
-      setTimeout(() => {
-        toast.classList.remove('translate-y-0', 'opacity-100');
-        toast.classList.add('translate-y-20', 'opacity-0');
-      }, 2500);
-    }
-
-    function copyCommand(cmd) {
-      navigator.clipboard.writeText(cmd).then(() => {
-        showToast(`Copied to clipboard: ${cmd}`);
-      }).catch(() => {
-        showToast(`Copied: ${cmd}`);
+  /* ---------- Tilt + spotlight ---------- */
+  if (!reduce && !coarse) {
+    $$('[data-tilt]').forEach(el => {
+      const max = parseFloat(el.dataset.tilt) || 6;
+      el.addEventListener('pointermove', e => {
+        const r = el.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+        el.style.setProperty('--mx', (x * 100) + '%'); el.style.setProperty('--my', (y * 100) + '%');
+        el.style.transform = `perspective(1000px) rotateY(${(x - .5) * max * 2}deg) rotateX(${-(y - .5) * max * 2}deg)`;
       });
-    }
-
-    // Interactive Failover Simulation
-    function simulateRateLimit() {
-      const box1 = document.getElementById('box-key1');
-      const tag1 = document.getElementById('tag-key1');
-      const sub1 = document.getElementById('sub-key1');
-
-      const box2 = document.getElementById('box-key2');
-      const tag2 = document.getElementById('tag-key2');
-      const sub2 = document.getElementById('sub-key2');
-
-      const log = document.getElementById('failover-log');
-
-      // Step 1: Hit 429
-      log.innerText = '⚠️ Key #1 returned HTTP 429 (TPM Limit). Auto-routing...';
-      log.className = 'text-amber-400 font-bold';
-
-      box1.classList.remove('border-white/[0.1]');
-      box1.classList.add('border-rose-500/80', 'bg-rose-500/10');
-      tag1.innerText = '429 Limit';
-      tag1.className = 'text-rose-400 font-bold';
-      sub1.innerText = 'Quota exceeded (bypassed)';
-
-      // Step 2: Instant jump to Key 2
-      setTimeout(() => {
-        box2.classList.remove('border-white/[0.05]');
-        box2.classList.add('border-emerald-500/80', 'bg-emerald-500/10', 'shadow-glow-emerald');
-        tag2.innerText = '● Active (Switched in 12ms)';
-        tag2.className = 'text-emerald-400 font-bold';
-        sub2.innerText = 'Streaming tokens seamlessly';
-
-        log.innerText = '✅ Zero-Downtime Failover Succeeded to Key #2!';
-        log.className = 'text-emerald-400 font-bold';
-        showToast('Auto-failover: Switched from Key 1 to Key 2 in 12ms!');
-      }, 700);
-
-      // Reset after 6 seconds
-      setTimeout(() => {
-        box1.className = 'p-3 rounded-lg bg-dark-950 border border-white/[0.1] transition-all flex flex-col justify-between';
-        tag1.innerText = 'Active';
-        tag1.className = 'text-emerald-400';
-        sub1.innerText = 'Ready for requests';
-
-        box2.className = 'p-3 rounded-lg bg-dark-950 border border-white/[0.05] transition-all flex flex-col justify-between';
-        tag2.innerText = 'Standby';
-        tag2.className = 'text-slate-500';
-        sub2.innerText = 'Queued in pool';
-
-        log.innerText = '● Status: Normal Operation';
-        log.className = 'text-emerald-400 font-bold';
-      }, 6000);
-    }
-
-    // Interactive Terminal Scenarios
-    const scenarios = {
-      sc1: {
-        title: "scenario: clean_and_organize_downloads.pragnya",
-        status: "Completed in 480ms",
-        content: `
-          <p class="text-slate-400"><span class="text-brand-400">&gt; Prompt:</span> "Organize all PDF invoices and PNG receipts from Downloads into Monthly Folders."</p>
-          <p class="text-sky-300">[1/3] <span class="text-slate-300">FileTools.list_directory("C:/Users/Adi/Downloads")</span> &rarr; Found 28 files.</p>
-          <p class="text-sky-300">[2/3] <span class="text-slate-300">FileTools.create_directory("C:/Users/Adi/Documents/Finance/2026-10")</span></p>
-          <p class="text-sky-300">[3/3] <span class="text-slate-300">FileTools.move_file()</span> &rarr; Relocated 12 invoices & 16 receipts safely.</p>
-          <p class="text-emerald-400 font-bold">&check; Task completed autonomously. Audit record #89 written to SQLite.</p>
-        `
-      },
-      sc2: {
-        title: "scenario: diagnose_terminal_error.pragnya",
-        status: "Repaired in 620ms",
-        content: `
-          <p class="text-slate-400"><span class="text-brand-400">&gt; User Action:</span> Clicked [Fix with AI] in Pragnya Code Terminal.</p>
-          <p class="text-purple-300">[Parser] Extracted traceback: <span class="text-rose-400 font-bold">ModuleNotFoundError: No module named 'playwright'</span></p>
-          <p class="text-sky-300">[Orchestrator] Invoking SystemTools: <span class="text-white">uv add playwright && uv run playwright install</span></p>
-          <p class="text-amber-300">[Terminal] Successfully installed Playwright v1.64.1 and Chromium browser binary.</p>
-          <p class="text-emerald-400 font-bold">&check; Re-ran script: Exit Code 0 (All web automation tests passed).</p>
-        `
-      },
-      sc3: {
-        title: "scenario: rate_limit_failover_demo.pragnya",
-        status: "Failed over in 14ms (Zero Downtime)",
-        content: `
-          <p class="text-slate-400"><span class="text-brand-400">&gt; Prompt:</span> "Run large batch code refactoring on 15 repository files."</p>
-          <p class="text-slate-300">[Pool Engine] Dispatching request to Key #1 (gsk_primary)...</p>
-          <p class="text-rose-400">[Groq Error] HTTP 429: Rate Limit Exceeded (TPM ceiling reached on Key #1).</p>
-          <p class="text-amber-400 font-bold">[Auto-Failover] Instant intercept! Switching to Key #2 (gsk_backup_01)...</p>
-          <p class="text-emerald-400 font-bold">&check; Response stream received from Key #2 in 340ms. Developer was never blocked.</p>
-        `
-      }
-    };
-
-    function setScenario(scId) {
-      const sc = scenarios[scId];
-      if (!sc) return;
-
-      document.getElementById('sim-title').innerText = sc.title;
-      document.getElementById('sim-status').innerText = sc.status;
-      document.getElementById('sim-content').innerHTML = sc.content;
-
-      // Update tab active state
-      document.querySelectorAll('.scenario-btn').forEach(btn => {
-        btn.classList.remove('bg-brand-500/20', 'border-brand-500', 'text-white');
-        btn.classList.add('bg-white/[0.03]', 'border-white/[0.08]', 'text-slate-400');
+      el.addEventListener('pointerleave', () => { el.style.transform = ''; });
+    });
+    /* magnetic buttons */
+    $$('.magnetic').forEach(b => {
+      b.addEventListener('pointermove', e => {
+        const r = b.getBoundingClientRect();
+        b.style.transform = `translate(${(e.clientX - r.left - r.width / 2) * .18}px, ${(e.clientY - r.top - r.height / 2) * .28}px)`;
       });
+      b.addEventListener('pointerleave', () => { b.style.transform = ''; });
+    });
+    /* cursor glow */
+    const cg = $('#cursorGlow');
+    addEventListener('pointermove', e => { cg.style.opacity = 1; cg.style.transform = `translate(${e.clientX}px,${e.clientY}px)`; }, { passive: true });
+  }
 
-      const activeBtn = document.getElementById(`btn-${scId}`);
-      if (activeBtn) {
-        activeBtn.classList.remove('bg-white/[0.03]', 'border-white/[0.08]', 'text-slate-400');
-        activeBtn.classList.add('bg-brand-500/20', 'border-brand-500', 'text-white');
-      }
+  /* ---------- Counters ---------- */
+  function countUp(el) {
+    const end = +el.dataset.count; if (reduce) { el.textContent = end; return; }
+    const t0 = performance.now(), d = 1400;
+    (function f(t) { const p = Math.min((t - t0) / d, 1); el.textContent = Math.round(end * (1 - Math.pow(1 - p, 3))); if (p < 1) requestAnimationFrame(f); })(t0);
+  }
+  const cObs = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { countUp(e.target); cObs.unobserve(e.target); } }), { threshold: .6 });
+  $$('[data-count]').forEach(el => cObs.observe(el));
+
+  /* ---------- GSAP animations ---------- */
+  if (window.gsap && window.ScrollTrigger && !reduce) {
+    document.documentElement.classList.add('gsap-ok');
+    gsap.registerPlugin(ScrollTrigger);
+    gsap.from('#heroTitle .w > span', { yPercent: 115, rotate: 4, duration: 1.1, ease: 'expo.out', stagger: .07, delay: .1 });
+    const heroItems = $$('.hero [data-reveal]').filter(e => !e.classList.contains('stage'));
+    gsap.fromTo(heroItems, { y: 28, opacity: 0 }, { y: 0, opacity: 1, duration: .9, ease: 'power3.out', stagger: .12, delay: .35 });
+    ScrollTrigger.batch($$('[data-reveal]').filter(e => !e.closest('.hero') || e.classList.contains('stage')), {
+      start: 'top 88%', once: true,
+      onEnter: b => gsap.fromTo(b, { y: 46, opacity: 0, scale: .985 }, { y: 0, opacity: 1, scale: 1, duration: .9, ease: 'power3.out', stagger: .1, overwrite: true, clearProps: 'scale' })
+    });
+    gsap.from('#heroSteps .step', { x: -24, opacity: 0, duration: .6, stagger: .35, delay: 1.1, ease: 'power2.out' });
+    gsap.to('#heroWin', { yPercent: -4, ease: 'none', scrollTrigger: { trigger: '.stage', start: 'top bottom', end: 'bottom top', scrub: .6 } });
+    $$('.suite .num').forEach(n => gsap.to(n, { y: -26, ease: 'none', scrollTrigger: { trigger: n.parentElement, start: 'top bottom', end: 'bottom top', scrub: true } }));
+  }
+
+  /* ---------- FAQ ---------- */
+  const qas = $$('.qa');
+  qas.forEach(qa => {
+    const btn = $('button', qa);
+    btn.addEventListener('click', () => {
+      const open = !qa.classList.contains('open');
+      qas.forEach(o => { o.classList.remove('open'); $('button', o).setAttribute('aria-expanded', 'false'); });
+      if (open) { qa.classList.add('open'); btn.setAttribute('aria-expanded', 'true'); }
+    });
+  });
+  qas[0] && (qas[0].classList.add('open'), $('button', qas[0]).setAttribute('aria-expanded', 'true'));
+
+  /* ---------- Roving tabs helper ---------- */
+  function rovingTabs(tabs, select) {
+    tabs.forEach((t, i) => {
+      t.addEventListener('click', () => select(i, true));
+      t.addEventListener('keydown', e => {
+        const keys = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 };
+        if (keys[e.key]) { e.preventDefault(); const n = (i + keys[e.key] + tabs.length) % tabs.length; tabs[n].focus(); select(n, true); }
+        if (e.key === 'Home') { e.preventDefault(); tabs[0].focus(); select(0, true); }
+        if (e.key === 'End') { e.preventDefault(); tabs[tabs.length - 1].focus(); select(tabs.length - 1, true); }
+      });
+    });
+  }
+  const markTabs = (tabs, i) => tabs.forEach((t, k) => { t.setAttribute('aria-selected', k === i); t.tabIndex = k === i ? 0 : -1; });
+
+  /* ---------- Engine simulator ---------- */
+  const SC = [
+    { ttft:'185 ms', keys:'3 / 5 Ready', model:'llama-3.3-70b-versatile', n1:'Voice: "Scrape HN"', icon:'globe', title:'Playwright Browser', desc:'Headless Chromium', badge:'Table → CSV Export', tt:'Simulation Output: Playwright Table Extractor', done:'Pipeline Finished (214 ms)', c4:'#9156FC',
+      logs:['<p><span class="t">[00:00.012]</span> <span class="a">&gt; Prompt:</span> "Scrape top 10 articles from HackerNews into data/hn.csv"</p>','<p><span class="t">[00:00.045]</span> <span class="b">&gt; Router:</span> Invoking tool `browser_extract_tables` with URL=https://news.ycombinator.com</p>','<p><span class="t">[00:00.088]</span> <span class="g">&gt; Sandbox:</span> Path `data/hn.csv` verified inside project workspace. Approval granted.</p>','<p><span class="t">[00:00.175]</span> <span class="v">&gt; Playwright:</span> Chromium launched headless. 1 table found (30 rows). Top 10 rows extracted.</p>','<p class="ok">[00:00.214] ✔ Success: Exported 10 rows to `data/hn.csv` (1.4 KB). Audio TTS spoken.</p>'] },
+    { ttft:'142 ms', keys:'4 / 5 Ready', model:'llama-3.1-8b-instant', n1:'Watchdog Daemon Event', icon:'folder-check', title:'Smart Watchdog', desc:'Filesystem Daemon', badge:'Invoices → Ledger.csv', tt:'Simulation Output: Watchdog Invoice Ledger', done:'Pipeline Finished (168 ms)',
+      logs:['<p><span class="t">[00:00.008]</span> <span class="a">&gt; Watchdog:</span> File change detected: `Downloads/AWS_Bill_Nov.pdf`</p>','<p><span class="t">[00:00.038]</span> <span class="b">&gt; DocumentReader:</span> Extracted text: "Invoice #INV-9821, Total: $141.60, Vendor: Amazon Web Services"</p>','<p><span class="t">[00:00.092]</span> <span class="g">&gt; Classifier:</span> Matched Rule "Invoices" → Target `Documents/Invoices/`</p>','<p><span class="t">[00:00.125]</span> <span class="v">&gt; LedgerEngine:</span> Appended entry: Date=2026-11-03, Vendor="AWS", Amount=$141.60</p>','<p class="ok">[00:00.168] ✔ Success: File organized + recorded in `ledger.csv`. Windows notification posted.</p>'] },
+    { ttft:'210 ms', keys:'5 / 5 Ready', model:'llama-3.3-70b-versatile', n1:'DocuBrain Query', icon:'database', title:'DocuBrain SQLite RAG', desc:'FTS5 BM25 Engine', badge:'Offline Local Vectors', tt:'Simulation Output: DocuBrain Local RAG Query', done:'Pipeline Finished (285 ms)',
+      logs:['<p><span class="t">[00:00.015]</span> <span class="a">&gt; Query:</span> "What were the Q3 server infrastructure expenses according to internal reports?"</p>','<p><span class="t">[00:00.062]</span> <span class="b">&gt; DocuBrain:</span> Searching SQLite FTS5 index across 42 local documents...</p>','<p><span class="t">[00:00.118]</span> <span class="g">&gt; Retrieval:</span> Found 3 high-scoring chunks in `financials_q3.xlsx` &amp; `infra_audit.pdf`</p>','<p><span class="t">[00:00.230]</span> <span class="v">&gt; Groq LPU:</span> Synthesized grounded factual answer with exact citations.</p>','<p class="ok">[00:00.285] ✔ Success: Answer returned with exact file citations. Zero data left local machine.</p>'] },
+    { ttft:'190 ms', keys:'3 / 5 Ready', model:'llama-3.3-70b-versatile', n1:'Code Editor Run', icon:'terminal', title:'PowerShell Terminal', desc:'Native QProcess Runner', badge:'Pytest 136/136 Pass', tt:'Simulation Output: Pragnya Code Terminal Runner', done:'Pipeline Finished (340 ms)',
+      logs:['<p><span class="t">[00:00.018]</span> <span class="a">&gt; User:</span> Clicked "Run Script" in Pragnya Code IDE (web_scraper.py)</p>','<p><span class="t">[00:00.070]</span> <span class="b">&gt; Agent:</span> Detected missing import `playwright`. Synthesized quick auto-fix diff.</p>','<p><span class="t">[00:00.140]</span> <span class="g">&gt; Sandbox:</span> Interactive Human Approval confirmed by user. Applying diff...</p>','<p><span class="t">[00:00.260]</span> <span class="v">&gt; Terminal:</span> Executing `uv run pytest` inside background QProcess...</p>','<p class="ok">[00:00.340] ✔ Success: 136 tests passed in 28s. Exit code 0. Tab status: Green.</p>'] }
+  ];
+  const simTabs = $$('[id^="simtab-"]');
+  const nodes = [0,1,2,3].map(i => $('#node' + i));
+  const logsEl = $('#logs'), rail = $('#railFill');
+  let runId = 0, cur = 0, auto = !reduce, simInView = false;
+
+  async function runSim(i) {
+    const id = ++runId, s = SC[i]; cur = i;
+    markTabs(simTabs, i);
+    simTabs.forEach(t => { const b = $('.bar', t); b.style.transition = 'none'; b.style.width = '0'; });
+    $('#tTtft').textContent = s.ttft; $('#tKeys').textContent = s.keys; $('#tModel').textContent = s.model;
+    $('#n1desc').textContent = s.n1; $('#n4title').textContent = s.title; $('#n4desc').textContent = s.desc; $('#n4badge').textContent = s.badge;
+    $('#n4box').innerHTML = `<i data-lucide="${s.icon}" class="i"></i><span class="n">04</span>`; icons();
+    $('#tTitle').textContent = s.tt; $('#tStatus').textContent = 'Running…';
+    logsEl.innerHTML = ''; nodes.forEach(n => n.classList.remove('on')); rail.style.width = '0%';
+    await sleep(300);
+    for (let k = 0; k < s.logs.length; k++) {
+      if (id !== runId) return;
+      logsEl.insertAdjacentHTML('beforeend', s.logs[k]);
+      if (k < 4) { nodes[k].classList.add('on'); rail.style.width = (k / 3 * 100) + '%'; }
+      await sleep(k === 0 ? 650 : 750);
     }
-
-    // Default scenario load
-    setScenario('sc1');
-
-    // FAQ Accordion Toggle
-    function toggleFaq(card) {
-      const p = card.querySelector('p');
-      const icon = card.querySelector('[data-lucide="chevron-down"]');
-      if (p.classList.contains('hidden')) {
-        p.classList.remove('hidden');
-        if (icon) icon.style.transform = 'rotate(180deg)';
-      } else {
-        p.classList.add('hidden');
-        if (icon) icon.style.transform = 'rotate(0deg)';
-      }
+    if (id !== runId) return;
+    $('#tStatus').textContent = s.done;
+    if (auto) { const b = $('.bar', simTabs[i]); b.style.transition = 'width 2.6s linear'; b.style.width = '100%'; }
+  }
+  rovingTabs(simTabs, (i, user) => { if (user) auto = false; runSim(i); });
+  async function simLoop() {
+    while (auto) {
+      if (!simInView) { await sleep(400); continue; }
+      await runSim(cur); if (!auto) break;
+      await sleep(2700); if (!auto) break;
+      cur = (cur + 1) % SC.length;
     }
-  </script>
+  }
+  let simStarted = false;
+  new IntersectionObserver(es => es.forEach(e => {
+    simInView = e.isIntersecting;
+    if (e.isIntersecting && !simStarted) { simStarted = true; if (auto) simLoop(); else runSim(0); }
+  }), { threshold: .25 }).observe($('#simpanel'));
 
+  /* ---------- CLI ---------- */
+  const CLI = [
+    { cmd:'pragnya "Find and kill process using port 8000" -y', out:[
+      ['p','[approval] Terminating a process changes your system. Confirm in the dialog…'],
+      ['','Locating process listening on port 8000…'],
+      ['ok','✔ Approved. Process terminated. Port 8000 is free.']] },
+    { cmd:'pragnya browser https://news.ycombinator.com --table', out:[
+      ['','Launching headless Chromium…'],
+      ['','1 table found. Extracting rows…'],
+      ['ok','✔ Exported table to CSV. Use the PDF recipe for a print-fidelity archive.']] },
+    { cmd:'pragnya watchdog --scan', out:[
+      ['','Scanning Downloads and Desktop against your rules…'],
+      ['','Invoice PDFs parsed: vendor, date and total appended to the ledger.'],
+      ['ok','✔ Scan complete. Files organized.']] },
+    { cmd:'pragnya doctor', out:[
+      ['h','Pragnya System Doctor — Diagnostics & Health Check (v1.3.0)'],
+      ['','Python Runtime ...... 3.12.13 <span class="ok">✔ Compatible</span>'],
+      ['','OS Platform ......... win32 (nt) <span class="ok">✔ Supported</span>'],
+      ['','Groq API Key ........ gsk_d09a... <span class="ok">✔ Configured</span>'],
+      ['','Local SQLite DB ..... agent.db <span class="ok">✔ Connected</span>'],
+      ['','Agent Tools ......... 55 tools <span class="ok">✔ Ready</span>'],
+      ['','Playwright Browser .. Chromium <span class="ok">✔ Available</span>'],
+      ['ok','✔ All core systems operational! Pragnya is ready for tasks.']] }
+  ];
+  const cmdTabs = $$('[id^="cmd-"]'), cliOut = $('#cliOut');
+  let cliId = 0, cliCur = 0, cliStarted = false;
+  async function runCli(i) {
+    const id = ++cliId; cliCur = i; markTabs(cmdTabs, i);
+    const c = CLI[i]; cliOut.innerHTML = '';
+    const line = document.createElement('p');
+    line.innerHTML = '<span class="p">PS C:\\Users\\HP&gt;</span> <span class="strong"></span><span class="cur"></span>';
+    cliOut.appendChild(line);
+    const txt = $('.strong', line);
+    if (reduce) txt.textContent = c.cmd;
+    else for (const ch of c.cmd) { if (id !== cliId) return; txt.textContent += ch; await sleep(16); }
+    if (id !== cliId) return;
+    $('.cur', line).remove(); await sleep(300);
+    for (const [cls, html] of c.out) {
+      if (id !== cliId) return;
+      const p = document.createElement('p'); if (cls) p.className = cls; p.innerHTML = html; cliOut.appendChild(p); await sleep(380);
+    }
+  }
+  rovingTabs(cmdTabs, i => runCli(i));
+  $('#cliCopy').addEventListener('click', () => copyText(CLI[cliCur].cmd));
+  new IntersectionObserver((es, o) => es.forEach(e => { if (e.isIntersecting && !cliStarted) { cliStarted = true; runCli(0); o.disconnect(); } }), { threshold: .3 }).observe($('#cliTerm'));
+
+  /* ---------- Three.js 3D core ---------- */
+  initScene();
+  function initScene() {
+    if (!window.THREE) return;
+    let renderer;
+    try { renderer = new THREE.WebGLRenderer({ canvas, antialias: innerWidth > 768, alpha: true, powerPreference: 'high-performance' }); }
+    catch (e) { canvas.style.display = 'none'; return; }
+    const small = () => innerWidth < 768;
+    renderer.setPixelRatio(Math.min(devicePixelRatio || 1, small() ? 1.5 : 2));
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(50, 1, .1, 100); camera.position.z = 8;
+    const group = new THREE.Group(); scene.add(group);
+
+    scene.add(new THREE.AmbientLight(0x6688aa, .6));
+    const l1 = new THREE.PointLight(0x0FC1E7, 2.2, 30); l1.position.set(4, 3, 5); scene.add(l1);
+    const l2 = new THREE.PointLight(0x9156FC, 2.2, 30); l2.position.set(-4, -3, 4); scene.add(l2);
+
+    const shell = new THREE.Mesh(new THREE.IcosahedronGeometry(1.5, 1), new THREE.MeshBasicMaterial({ color: 0x099BF6, wireframe: true, transparent: true, opacity: .45 }));
+    const core = new THREE.Mesh(new THREE.IcosahedronGeometry(.85, 2), new THREE.MeshStandardMaterial({ color: 0x0b1d3a, emissive: 0x0a6fd0, emissiveIntensity: .75, metalness: .7, roughness: .22, flatShading: true }));
+    const glow = new THREE.Mesh(new THREE.SphereGeometry(1.15, 32, 32), new THREE.MeshBasicMaterial({ color: 0x0FC1E7, transparent: true, opacity: .07, side: THREE.BackSide }));
+    group.add(shell, core, glow);
+
+    const rings = [], orbs = [];
+    [[2.3, 0x0FC1E7, 1.1, .3], [2.75, 0x9156FC, .4, 1.2], [3.2, 0x1D74FD, 1.9, -.6]].forEach(([r, col, rx, ry], i) => {
+      const ring = new THREE.Mesh(new THREE.TorusGeometry(r, .008, 8, 200), new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: .55 }));
+      ring.rotation.set(rx, ry, 0); group.add(ring); rings.push(ring);
+      const orb = new THREE.Mesh(new THREE.SphereGeometry(.08, 16, 16), new THREE.MeshBasicMaterial({ color: col }));
+      ring.add(orb); orbs.push({ orb, r, speed: .5 + i * .22, a: i * 2 });
+    });
+
+    const COUNT = small() ? 450 : 1300, pos = new Float32Array(COUNT * 3), colr = new Float32Array(COUNT * 3);
+    const pal = [new THREE.Color(0x0FC1E7), new THREE.Color(0x099BF6), new THREE.Color(0x9156FC)];
+    for (let i = 0; i < COUNT; i++) {
+      const r = 3.6 + Math.random() * 9, th = Math.random() * Math.PI * 2, ph = Math.acos(2 * Math.random() - 1);
+      pos[i*3] = r * Math.sin(ph) * Math.cos(th); pos[i*3+1] = r * Math.sin(ph) * Math.sin(th); pos[i*3+2] = r * Math.cos(ph);
+      const c = pal[Math.floor(Math.random() * 3)]; colr[i*3] = c.r; colr[i*3+1] = c.g; colr[i*3+2] = c.b;
+    }
+    const pg = new THREE.BufferGeometry();
+    pg.setAttribute('position', new THREE.BufferAttribute(pos, 3)); pg.setAttribute('color', new THREE.BufferAttribute(colr, 3));
+    const stars = new THREE.Points(pg, new THREE.PointsMaterial({ size: .045, vertexColors: true, transparent: true, opacity: .85, blending: THREE.AdditiveBlending, depthWrite: false }));
+    scene.add(stars);
+
+    const W = small() ? 40 : 90, wp = new Float32Array(W * 6);
+    for (let i = 0; i < W; i++) {
+      const a = new THREE.Vector3().randomDirection().multiplyScalar(1.55), b = new THREE.Vector3().randomDirection().multiplyScalar(2.6 + Math.random() * 2.2);
+      wp.set([a.x, a.y, a.z, b.x, b.y, b.z], i * 6);
+    }
+    const wg = new THREE.BufferGeometry(); wg.setAttribute('position', new THREE.BufferAttribute(wp, 3));
+    group.add(new THREE.LineSegments(wg, new THREE.LineBasicMaterial({ color: 0x0FC1E7, transparent: true, opacity: .16 })));
+
+    let mx = 0, my = 0, tx = 0, ty = 0;
+    addEventListener('pointermove', e => { mx = e.clientX / innerWidth - .5; my = e.clientY / innerHeight - .5; }, { passive: true });
+
+    function resize() {
+      const w = innerWidth, h = innerHeight; renderer.setSize(w, h, false);
+      camera.aspect = w / h; camera.fov = w < 768 ? 62 : 50; camera.updateProjectionMatrix();
+    }
+    addEventListener('resize', () => { resize(); if (reduce) draw(0); });
+    resize();
+
+    const clock = new THREE.Clock();
+    function draw(t) {
+      const p = Math.min(scrollY / innerHeight, 2), mob = small();
+      const baseX = mob ? 0 : 2.9, baseY = mob ? 2.4 : .35;
+      tx += (mx - tx) * .05; ty += (my - ty) * .05;
+      group.position.x = baseX * Math.cos(Math.min(p, 1.4) * 1.1) - (p > 1 ? (p - 1) * 1.2 : 0);
+      group.position.y = baseY + p * 1.1;
+      const sc = (mob ? .62 : 1) * (1 - Math.min(p, 1.2) * .22); group.scale.setScalar(sc);
+      group.rotation.y = t * .18 + tx * 1.1 + p * .9;
+      group.rotation.x = Math.sin(t * .3) * .15 + ty * .7 + p * .3;
+      shell.rotation.y = -t * .3; core.rotation.x = t * .25; core.rotation.y = t * .35;
+      const pulse = 1 + Math.sin(t * 2) * .035; core.scale.setScalar(pulse); glow.scale.setScalar(1 + Math.sin(t * 1.4) * .08);
+      orbs.forEach(o => { o.a += .008 * o.speed; o.orb.position.set(Math.cos(o.a) * o.r, Math.sin(o.a) * o.r, 0); });
+      rings.forEach((r, i) => { r.rotation.z = t * (.1 + i * .05); });
+      stars.rotation.y = t * .02 + p * .25; stars.rotation.x = p * .12;
+      camera.position.x = tx * .6; camera.position.y = -ty * .4; camera.lookAt(0, 0, 0);
+      renderer.render(scene, camera);
+    }
+    if (reduce) { draw(1); return; }
+    let running = true;
+    document.addEventListener('visibilitychange', () => { running = !document.hidden; });
+    (function loop() { requestAnimationFrame(loop); if (running) draw(clock.getElapsedTime()); })();
+  }
+}
+</script>
 </body>
 </html>
